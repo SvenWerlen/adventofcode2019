@@ -10,7 +10,7 @@ import java.io.IOException;
  * Solver for 2019 Day 1
  * https://adventofcode.com/2019/day/1
  */
-public class Day1 {
+public class Day01 {
 
     /**
      * Utility to compute fuel: floor(mass/3)-2
