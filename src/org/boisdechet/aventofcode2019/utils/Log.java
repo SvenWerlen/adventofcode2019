@@ -1,9 +1,12 @@
 package org.boisdechet.aventofcode2019.utils;
 
+import java.util.Arrays;
+
 public class Log {
 
-    public static final String WELCOME_MESSAGE = "Avent of code 2019";
-    public static final String SEPARATOR       = "==================";
+    public static boolean DEBUG = false;
+    private static final String WELCOME_MESSAGE = "Avent of code 2019";
+    private static final String SEPARATOR       = "==================";
 
     private static void printMessage(String text) {
         System.out.println(text);
@@ -19,7 +22,23 @@ public class Log {
         printMessage(text);
     }
 
+    public static void i(int[] values) {
+        printMessage(Arrays.toString(values));
+    }
+
     public static void w(String text) {
         printMessage(String.format("[W] %s", text));
+    }
+
+    public static void d(String text) {
+        if(DEBUG) {
+            printMessage(String.format("[D] %s", text));
+        }
+    }
+
+    public static void d(int[] values) {
+        if(DEBUG) {
+            printMessage(String.format("[D] %s", Arrays.toString(values)));
+        }
     }
 }

@@ -32,4 +32,13 @@ public class InputUtil {
         return new BufferedReader(new FileReader(path.toFile()));
     }
 
+    public static String readInputAsString(int day, boolean firstPart) throws IOException {
+        String filename = String.format(INPUT_FILE_PATTERN, day, firstPart ? 1 : 2);
+        Path path = Paths.get(getInputsPath().toString(), filename);
+        if( !path.toFile().exists() ) {
+            throw new FileNotFoundException(String.format("Input file '%s' not found!", path.toString()));
+        }
+        return Files.readString(path, StandardCharsets.UTF_8);
+    }
+
 }
