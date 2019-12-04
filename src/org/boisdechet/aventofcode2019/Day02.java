@@ -13,18 +13,6 @@ import java.io.IOException;
 public class Day02 {
 
     /**
-     * Utility to convert instructions (as string) to IntCode
-     */
-    protected static int[] convertToIntCode(String instructions) {
-        String[] instr = instructions.split(",");
-        int[] result = new int[instr.length];
-        for(int i=0; i<instr.length; i++) {
-            result[i]=Integer.parseInt(instr[i]);
-        }
-        return result;
-    }
-
-    /**
      * Utility to convert execute instructions
      */
     protected static int executeIntCode(int[] instructions) {
@@ -63,7 +51,7 @@ public class Day02 {
      */
     public static long part1() throws IOException {
         String val = InputUtil.readInputAsString(2, true);
-        int[] intCode = convertToIntCode(val);
+        int[] intCode = InputUtil.convertToIntArray(val);
         // 1202 program alarm
         intCode[1] = 12;
         intCode[2] = 2;
@@ -78,7 +66,7 @@ public class Day02 {
         int desiredOutput = Integer.parseInt(InputUtil.readInputAsString(2, false));
         for(int noun = 0; noun < 100; noun++) {
             for(int verb = 0; verb < 100; verb++) {
-                int[] intCode = convertToIntCode(val);
+                int[] intCode = InputUtil.convertToIntArray(val);
                 intCode[1] = noun;
                 intCode[2] = verb;
                 int output = executeIntCode(intCode);

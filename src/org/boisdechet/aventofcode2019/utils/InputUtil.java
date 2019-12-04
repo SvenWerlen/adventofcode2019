@@ -41,4 +41,12 @@ public class InputUtil {
         return Files.readString(path, StandardCharsets.UTF_8);
     }
 
+    public static int[] convertToIntArray(String value) {
+        String[] instr = value.split(",");
+        int[] result = new int[instr.length];
+        for(int i=0; i<instr.length; i++) {
+            result[i]=Integer.parseInt(instr[i]);
+        }
+        return result;
+    }
 }
