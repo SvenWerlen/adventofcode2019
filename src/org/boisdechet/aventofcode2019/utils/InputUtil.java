@@ -49,4 +49,12 @@ public class InputUtil {
         }
         return result;
     }
+
+    public static int[] convertToDigitArray(String value) {
+        int[] result = new int[value.length()];
+        for(int i=0; i<value.length(); i++) {
+            result[i] = Character.getNumericValue(value.charAt(i));
+        }
+        return result;
+    }
 }
