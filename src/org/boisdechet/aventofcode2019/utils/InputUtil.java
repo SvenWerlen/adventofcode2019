@@ -23,6 +23,15 @@ public class InputUtil {
         return inputFolder;
     }
 
+    public static BufferedReader readInputSample(int day) throws IOException {
+        String filename = String.format(INPUT_FILE_PATTERN, day, 0);
+        Path path = Paths.get(getInputsPath().toString(), filename);
+        if( !path.toFile().exists() ) {
+            throw new FileNotFoundException(String.format("Input sample file '%s' not found!", path.toString()));
+        }
+        return new BufferedReader(new FileReader(path.toFile()));
+    }
+
     public static BufferedReader readInput(int day, boolean firstPart) throws IOException {
         String filename = String.format(INPUT_FILE_PATTERN, day, firstPart ? 1 : 2);
         Path path = Paths.get(getInputsPath().toString(), filename);
