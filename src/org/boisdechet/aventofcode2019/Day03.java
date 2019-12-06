@@ -8,6 +8,10 @@ import org.boisdechet.aventofcode2019.utils.Log;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+/**
+ * Solver for 2019 Day 3
+ * https://adventofcode.com/2019/day/3
+ */
 public class Day03 {
 
     private static Segment[] convertToSegment(String pathstr) {

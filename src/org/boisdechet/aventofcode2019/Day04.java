@@ -9,6 +9,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.Set;
 
+/**
+ * Solver for 2019 Day 4
+ * https://adventofcode.com/2019/day/4
+ */
 public class Day04 {
 
     protected static boolean isValid(int number, boolean acceptLargerGroup) {
