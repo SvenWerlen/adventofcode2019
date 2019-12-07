@@ -27,16 +27,26 @@ public class Amplifiers {
         int output = 0;
         int maxOutput = 0;
         int count = 1;
-        OpCodeMachine machine = new OpCodeMachine(instructions);
+
+        // build amplifiers
+        OpCodeMachine[] amplifiers = new OpCodeMachine[sequence.length];
+        for(int idx=0; idx<sequence.length; idx++) {
+            amplifiers[idx] = new OpCodeMachine(instructions);
+        }
         Log.d(String.format("Sequence: %s", InputUtil.convertToString(sequence)));
         while(true) {
-            for (int value : sequence) {
-                output = machine.execute(value, output);
+            for (int idx=0; idx<sequence.length; idx++) {
+                output = amplifiers[idx].execute(count == 1 ? sequence[idx] : output, output, false);
+                Log.d(String.format("Output (amp #%d) = %d", idx, output));
             }
             Log.d(String.format("Output (loop %d) = %d", count, output));
-            if(!loop || count == sequence.length) {
+            if(!loop) {
                 break;
             }
+            if(output == 0) {
+                return maxOutput;
+            }
+            maxOutput = output;
             count++;
         }
         return output;

@@ -24,14 +24,15 @@ public class Day07 {
      * Part 2
      */
     public static long part2() throws IOException {
-        return 0;
+        String instructions = InputUtil.readInputAsString(7, true);
+        return Amplifiers.getMaxThrustersOutput(InputUtil.convertToIntArray("5,6,7,8,9"), InputUtil.convertToIntArray(instructions), true);
     }
 
     public static void main(String[] args) {
         Log.welcome();
         try {
             Log.i(String.format("Highest signal: %d", part1()));
-            //Log.i(String.format("Minimum number of orbital transfer: %d", part2()));
+            Log.i(String.format("Highest signal (loop): %d", part2()));
         } catch(Exception exc) {
             Log.w(String.format("Error during execution: %s", exc.getMessage()));
         }

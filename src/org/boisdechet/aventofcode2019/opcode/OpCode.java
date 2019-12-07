@@ -49,4 +49,21 @@ public class OpCode {
                 (param3Mode == MODE_POSITION || param3Mode == MODE_IMMEDIATE);
     }
 
+    @Override
+    public String toString() {
+        StringBuffer buf = new StringBuffer();
+        buf.append(opCode);
+        switch(opCode) {
+            case OP_ADD: buf.append("(ADD)"); break;
+            case OP_MULT: buf.append("(MUL)"); break;
+            case OP_IN: buf.append("(IN)"); break;
+            case OP_OUT: buf.append("(OUT)"); break;
+            case OP_JUMP_IF_TRUE: buf.append("(JMP1)"); break;
+            case OP_JUMP_IF_FALSE: buf.append("(JMP0)"); break;
+            case OP_LESS_THAN: buf.append("(<)"); break;
+            case OP_EQUALS: buf.append("(==)"); break;
+            case OP_HALT: buf.append("(HALT)"); break;
+        }
+        return buf.toString();
+    }
 }
