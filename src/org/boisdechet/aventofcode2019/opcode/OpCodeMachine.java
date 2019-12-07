@@ -27,13 +27,21 @@ public class OpCodeMachine {
         }
     }
 
+    /**
+     * 1-parameter version
+     */
     public int execute(int parameter) {
+        return execute(parameter, parameter);
+    }
+
+    public int execute(int parameterInit, int parameter2) {
         // reset instructions (that might have changed from previous execution)
         instr = new int[this.orig.length];
         System.arraycopy( this.orig, 0, instr, 0, this.orig.length );
 
         int curIdx = 0;
         int result = 0;
+        int parameterCount = 0;
         while(true) {
             Log.d(instr);
 
@@ -63,12 +71,13 @@ public class OpCodeMachine {
                     break;
                 case OpCode.OP_IN:
                     dest = instr[curIdx+1];
-                    instr[dest] = parameter;
+                    instr[dest] = parameterCount == 0  ? parameterInit : parameter2;
+                    parameterCount++;
                     curIdx += 2;
                     break;
                 case OpCode.OP_OUT:
                     dest = getValue(instr[curIdx+1], opcode.getParam1Mode());
-                    Log.i(String.format("[Out] %d (index %d)", dest, curIdx));
+                    Log.d(String.format("[Out] %d (index %d)", dest, curIdx));
                     result = dest;
                     curIdx += 2;
                     break;

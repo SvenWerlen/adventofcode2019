@@ -59,6 +59,22 @@ public class InputUtil {
         return result;
     }
 
+    public static String convertToString(int[] value) {
+        StringBuffer buf = new StringBuffer();
+        for(int v : value) {
+            buf.append(v);
+        }
+        return buf.toString();
+    }
+
+    public static Integer[] convertToIntegerArray(int[] intArray) {
+        Integer[] result = new Integer[intArray.length];
+        for (int i = 0; i < intArray.length; i++) {
+            result[i] = Integer.valueOf(intArray[i]);
+        }
+        return result;
+    }
+
     public static int[] convertToDigitArray(String value) {
         int[] result = new int[value.length()];
         for(int i=0; i<value.length(); i++) {
