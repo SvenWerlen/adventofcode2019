@@ -36,7 +36,7 @@ class Day05Test {
     }
 
     @Test
-    public void examples() {
+    public void examples() throws Exception {
         OpCodeMachine m = new OpCodeMachine(InputUtil.convertToIntArray("3,9,8,9,10,9,4,9,99,-1,8"));
         assertEquals(0, m.execute(5));
         assertEquals(1, m.execute(8));
@@ -59,6 +59,9 @@ class Day05Test {
         assertEquals(999, m.execute(5));
         assertEquals(1000, m.execute(8));
         assertEquals(1001, m.execute(9));
+        // solutions (backwards compatibility)
+        assertEquals(13787043, Day06.part1());
+        assertEquals(3892695, Day06.part2());
     }
 
 }
