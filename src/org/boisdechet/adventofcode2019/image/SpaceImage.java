@@ -1,5 +1,7 @@
 package org.boisdechet.adventofcode2019.image;
 
+import java.util.Map;
+
 public class SpaceImage {
 
     private int width;
@@ -74,13 +76,20 @@ public class SpaceImage {
 
     @Override
     public String toString() {
+        return toString(null);
+    }
+
+    public String toString(Map<Integer, Character> cTable) {
         StringBuffer buf = new StringBuffer();
         buf.append("Image:\n");
         int[] pixels = getTopLayer();
         for(int i=0; i<height; i++) {
             for (int j = 0; j < width; j++) {
-                if(pixels[i*width+j]!=1) {
-                    buf.append(String.valueOf(pixels[i * width + j]));
+                Integer val = pixels[i * width + j];
+                if(cTable == null) {
+                    buf.append(String.valueOf(val));
+                } else if(cTable.containsKey(val)) {
+                    buf.append(cTable.get(val));
                 } else {
                     buf.append(' ');
                 }

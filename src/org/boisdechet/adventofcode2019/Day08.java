@@ -5,6 +5,8 @@ import org.boisdechet.adventofcode2019.utils.InputUtil;
 import org.boisdechet.adventofcode2019.utils.Log;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Solver for 2019 Day 8
@@ -42,7 +44,7 @@ public class Day08 {
      */
     public static long part2() throws IOException {
         SpaceImage image = new SpaceImage(25, 6, InputUtil.convertToIntArrayNoSep(InputUtil.readInputAsString(8, true)));
-        Log.i(image.toString());
+        Log.i(image.toString(Map.of(1, '#')));
         return 0;
     }
 
