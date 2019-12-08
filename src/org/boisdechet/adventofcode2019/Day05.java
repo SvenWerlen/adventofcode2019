@@ -18,7 +18,11 @@ public class Day05 {
     public static long part1() throws IOException {
         int[] instructions = InputUtil.convertToIntArray(InputUtil.readInputAsString(5, true));
         OpCodeMachine machine = new OpCodeMachine(instructions);
-        return machine.execute(1);
+        int result = 0;
+        while(result == 0) {
+            result = machine.execute(1,1, false);
+        }
+        return result;
     }
 
     /**
