@@ -13,18 +13,27 @@ class Day08Test {
 
     @Test
     public void examples() throws Exception {
-        // samples
+        // part I
         SpaceImage image = new SpaceImage(3,2, InputUtil.convertToIntArrayNoSep("123456789012"));
-        Log.i(image.toString());
         assertTrue(image.isValid());
         assertEquals(2, image.getLayersCount());
         assertEquals(1, image.getColorCountForLayer(5,0));
         image = new SpaceImage(2,2,InputUtil.convertToIntArrayNoSep("0222112222120000"));
-        Log.i(image.toString());
-        // part I
         // part II
+        String result = "Image:\n" +
+                "01\n" +
+                "10\n";
+        assertEquals(result, image.toString());
         // solutions (backwards compatibility)
-        // not applicable!
+        assertEquals(1862, Day08.part1());
+        result = "Image:\n" +
+                " ##   ##  ###  #  # #    \n" +
+                "#  # #  # #  # #  # #    \n" +
+                "#    #    #  # #### #    \n" +
+                "# ## #    ###  #  # #    \n" +
+                "#  # #  # #    #  # #    \n" +
+                " ###  ##  #    #  # #### \n";
+        assertEquals(result, Day08.part2());
     }
 
 }

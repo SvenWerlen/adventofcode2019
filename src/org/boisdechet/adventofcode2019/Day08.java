@@ -42,17 +42,16 @@ public class Day08 {
     /**
      * Part 2
      */
-    public static long part2() throws IOException {
+    public static String part2() throws IOException {
         SpaceImage image = new SpaceImage(25, 6, InputUtil.convertToIntArrayNoSep(InputUtil.readInputAsString(8, true)));
-        Log.i(image.toString(Map.of(1, '#')));
-        return 0;
+        return image.toString(Map.of(1, '#'));
     }
 
     public static void main(String[] args) {
         Log.welcome();
         try {
             Log.i(String.format("Number of 1 digits multiplied by the number of 2 digits: %d", part1()));
-            part2();
+            Log.i(part2());
         } catch(Exception exc) {
             Log.w(String.format("Error during execution: %s", exc.getMessage()));
         }
