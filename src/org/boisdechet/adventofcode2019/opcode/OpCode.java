@@ -1,4 +1,4 @@
-package org.boisdechet.aventofcode2019.opcode;
+package org.boisdechet.adventofcode2019.opcode;
 
 public class OpCode {
 

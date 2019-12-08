@@ -1,6 +1,6 @@
-package org.boisdechet.aventofcode2019.opcode;
+package org.boisdechet.adventofcode2019.opcode;
 
-import org.boisdechet.aventofcode2019.utils.Log;
+import org.boisdechet.adventofcode2019.utils.Log;
 
 public class OpCodeMachine {
 

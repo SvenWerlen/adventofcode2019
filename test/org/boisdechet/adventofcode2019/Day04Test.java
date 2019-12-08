@@ -1,8 +1,5 @@
-package org.boisdechet.aventofcode2019;
+package org.boisdechet.adventofcode2019;
 
-import org.boisdechet.aventofcode2019.coord.Point;
-import org.boisdechet.aventofcode2019.coord.Segment;
-import org.boisdechet.aventofcode2019.utils.Log;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

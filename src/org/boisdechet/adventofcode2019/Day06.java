@@ -1,9 +1,8 @@
-package org.boisdechet.aventofcode2019;
+package org.boisdechet.adventofcode2019;
 
-import org.boisdechet.aventofcode2019.opcode.OpCodeMachine;
-import org.boisdechet.aventofcode2019.orbit.Object;
-import org.boisdechet.aventofcode2019.utils.InputUtil;
-import org.boisdechet.aventofcode2019.utils.Log;
+import org.boisdechet.adventofcode2019.orbit.Object;
+import org.boisdechet.adventofcode2019.utils.InputUtil;
+import org.boisdechet.adventofcode2019.utils.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package org.boisdechet.aventofcode2019.coord;
+package org.boisdechet.adventofcode2019.coord;
 
 public class Point {
     public int x, y;

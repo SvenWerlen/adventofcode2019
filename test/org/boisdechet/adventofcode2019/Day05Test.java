@@ -1,9 +1,8 @@
-package org.boisdechet.aventofcode2019;
+package org.boisdechet.adventofcode2019;
 
-import org.boisdechet.aventofcode2019.opcode.OpCode;
-import org.boisdechet.aventofcode2019.opcode.OpCodeMachine;
-import org.boisdechet.aventofcode2019.utils.InputUtil;
-import org.boisdechet.aventofcode2019.utils.Log;
+import org.boisdechet.adventofcode2019.opcode.OpCode;
+import org.boisdechet.adventofcode2019.opcode.OpCodeMachine;
+import org.boisdechet.adventofcode2019.utils.InputUtil;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -60,8 +59,8 @@ class Day05Test {
         assertEquals(1000, m.execute(8));
         assertEquals(1001, m.execute(9));
         // solutions (backwards compatibility)
-        assertEquals(13787043, Day06.part1());
-        assertEquals(3892695, Day06.part2());
+        assertEquals(13787043, Day05.part1());
+        assertEquals(3892695, Day05.part2());
     }
 
 }

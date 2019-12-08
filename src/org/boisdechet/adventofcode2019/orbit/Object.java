@@ -1,4 +1,4 @@
-package org.boisdechet.aventofcode2019.orbit;
+package org.boisdechet.adventofcode2019.orbit;
 
 public class Object {
 

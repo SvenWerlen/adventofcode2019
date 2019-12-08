@@ -1,4 +1,4 @@
-package org.boisdechet.aventofcode2019.utils;
+package org.boisdechet.adventofcode2019.utils;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 public class InputUtil {
 
@@ -57,6 +58,12 @@ public class InputUtil {
             result[i]=Integer.parseInt(instr[i]);
         }
         return result;
+    }
+
+    public static int[] convertToIntArrayNoSep(String value) {
+        return Stream.of(value.split(""))
+                .mapToInt(Integer::parseInt)
+                .toArray();
     }
 
     public static String convertToString(int[] value) {

@@ -1,4 +1,4 @@
-package org.boisdechet.aventofcode2019.utils;
+package org.boisdechet.adventofcode2019.utils;
 
 import java.util.*;
 

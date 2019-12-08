@@ -1,4 +1,4 @@
-package org.boisdechet.aventofcode2019;
+package org.boisdechet.adventofcode2019;
 
 import org.junit.jupiter.api.Test;
 
