@@ -26,6 +26,10 @@ public class Log {
         printMessage(Arrays.toString(values));
     }
 
+    public static void i(long[] values) {
+        printMessage(Arrays.toString(values));
+    }
+
     public static void w(String text) {
         printMessage(String.format("[W] %s", text));
     }
@@ -37,6 +41,12 @@ public class Log {
     }
 
     public static void d(int[] values) {
+        if(DEBUG) {
+            printMessage(String.format("[D] %s", Arrays.toString(values)));
+        }
+    }
+
+    public static void d(long[] values) {
         if(DEBUG) {
             printMessage(String.format("[D] %s", Arrays.toString(values)));
         }

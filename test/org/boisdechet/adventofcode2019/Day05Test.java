@@ -3,6 +3,7 @@ package org.boisdechet.adventofcode2019;
 import org.boisdechet.adventofcode2019.opcode.OpCode;
 import org.boisdechet.adventofcode2019.opcode.OpCodeMachine;
 import org.boisdechet.adventofcode2019.utils.InputUtil;
+import org.boisdechet.adventofcode2019.utils.Log;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,7 +24,7 @@ class Day05Test {
         assertEquals(OpCode.OP_HALT, (new OpCode(99)).getOpCode());
         assertTrue((new OpCode(104)).isValid());
         assertEquals(OpCode.MODE_IMMEDIATE, (new OpCode(104)).getParam1Mode());
-        assertFalse((new OpCode(204)).isValid());
+        assertFalse((new OpCode(304)).isValid());
         assertTrue((new OpCode(1004)).isValid());
         assertEquals(OpCode.MODE_IMMEDIATE, (new OpCode(1004)).getParam2Mode());
         assertFalse((new OpCode(5004)).isValid());
@@ -36,23 +37,23 @@ class Day05Test {
 
     @Test
     public void examples() throws Exception {
-        OpCodeMachine m = new OpCodeMachine(InputUtil.convertToIntArray("3,9,8,9,10,9,4,9,99,-1,8"));
+        OpCodeMachine m = new OpCodeMachine(InputUtil.convertToLongArray("3,9,8,9,10,9,4,9,99,-1,8"));
         assertEquals(0, m.execute(5));
         assertEquals(1, m.execute(8));
         assertEquals(0, m.execute(9));
-        m = new OpCodeMachine(InputUtil.convertToIntArray("3,9,7,9,10,9,4,9,99,-1,8"));
+        m = new OpCodeMachine(InputUtil.convertToLongArray("3,9,7,9,10,9,4,9,99,-1,8"));
         assertEquals(1, m.execute(5));
         assertEquals(0, m.execute(8));
         assertEquals(0, m.execute(9));
-        m = new OpCodeMachine(InputUtil.convertToIntArray("3,3,1108,-1,8,3,4,3,99"));
+        m = new OpCodeMachine(InputUtil.convertToLongArray("3,3,1108,-1,8,3,4,3,99"));
         assertEquals(0, m.execute(5));
         assertEquals(1, m.execute(8));
         assertEquals(0, m.execute(9));
-        m = new OpCodeMachine(InputUtil.convertToIntArray("3,3,1107,-1,8,3,4,3,99"));
+        m = new OpCodeMachine(InputUtil.convertToLongArray("3,3,1107,-1,8,3,4,3,99"));
         assertEquals(1, m.execute(5));
         assertEquals(0, m.execute(8));
         assertEquals(0, m.execute(9));
-        m = new OpCodeMachine(InputUtil.convertToIntArray("3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31," +
+        m = new OpCodeMachine(InputUtil.convertToLongArray("3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31," +
                 "1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104," +
                 "999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99"));
         assertEquals(999, m.execute(5));

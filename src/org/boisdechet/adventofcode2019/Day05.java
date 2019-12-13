@@ -16,9 +16,9 @@ public class Day05 {
      * Part 1
      */
     public static long part1() throws IOException {
-        int[] instructions = InputUtil.convertToIntArray(InputUtil.readInputAsString(5, true));
+        long[] instructions = InputUtil.convertToLongArray(InputUtil.readInputAsString(5, true));
         OpCodeMachine machine = new OpCodeMachine(instructions);
-        int result = 0;
+        long result = 0;
         while(result == 0) {
             result = machine.execute(1,1, false);
         }
@@ -29,7 +29,7 @@ public class Day05 {
      * Part 2
      */
     public static long part2() throws IOException {
-        int[] instructions = InputUtil.convertToIntArray(InputUtil.readInputAsString(5, true));
+        long[] instructions = InputUtil.convertToLongArray(InputUtil.readInputAsString(5, true));
         OpCodeMachine machine = new OpCodeMachine(instructions);
         return machine.execute(5);
     }

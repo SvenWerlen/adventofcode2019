@@ -17,7 +17,7 @@ public class Day07 {
      */
     public static long part1() throws IOException {
         String instructions = InputUtil.readInputAsString(7, true);
-        return Amplifiers.getMaxThrustersOutput(InputUtil.convertToIntArray("0,1,2,3,4"), InputUtil.convertToIntArray(instructions));
+        return Amplifiers.getMaxThrustersOutput(InputUtil.convertToIntArray("0,1,2,3,4"), InputUtil.convertToLongArray(instructions));
     }
 
     /**
@@ -25,7 +25,7 @@ public class Day07 {
      */
     public static long part2() throws IOException {
         String instructions = InputUtil.readInputAsString(7, true);
-        return Amplifiers.getMaxThrustersOutput(InputUtil.convertToIntArray("5,6,7,8,9"), InputUtil.convertToIntArray(instructions), true);
+        return Amplifiers.getMaxThrustersOutput(InputUtil.convertToIntArray("5,6,7,8,9"), InputUtil.convertToLongArray(instructions), true);
     }
 
     public static void main(String[] args) {

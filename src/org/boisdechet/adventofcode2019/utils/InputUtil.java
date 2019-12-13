@@ -60,6 +60,15 @@ public class InputUtil {
         return result;
     }
 
+    public static long[] convertToLongArray(String value) {
+        String[] instr = value.split(",");
+        long[] result = new long[instr.length];
+        for(int i=0; i<instr.length; i++) {
+            result[i]=Long.parseLong(instr[i]);
+        }
+        return result;
+    }
+
     public static int[] convertToIntArrayNoSep(String value) {
         return Stream.of(value.split(""))
                 .mapToInt(Integer::parseInt)

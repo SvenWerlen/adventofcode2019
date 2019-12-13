@@ -10,22 +10,22 @@ import java.util.List;
 public class Amplifiers {
 
     private int[] sequence;
-    private int[] instructions;
+    private long[] instructions;
     private boolean loop;
 
-    public Amplifiers(int[] sequence, int[] instructions) {
+    public Amplifiers(int[] sequence, long[] instructions) {
         this(sequence, instructions, false);
     }
 
-    public Amplifiers(int[] sequence, int[] instructions, boolean loop) {
+    public Amplifiers(int[] sequence, long[] instructions, boolean loop) {
         this.sequence = sequence;
         this.instructions = instructions;
         this.loop = loop;
     }
 
-    public int getThrustersOutput() {
-        int output = 0;
-        int maxOutput = 0;
+    public long getThrustersOutput() {
+        long output = 0;
+        long maxOutput = 0;
         int count = 1;
 
         // build amplifiers
@@ -36,14 +36,14 @@ public class Amplifiers {
         Log.d(String.format("Sequence: %s", InputUtil.convertToString(sequence)));
         while(true) {
             for (int idx=0; idx<sequence.length; idx++) {
-                output = amplifiers[idx].execute(count == 1 ? sequence[idx] : output, output, false);
+                output = amplifiers[idx].execute(count == 1 ? sequence[idx] : Math.toIntExact(output), Math.toIntExact(output), false);
                 Log.d(String.format("Output (amp #%d) = %d", idx, output));
             }
             Log.d(String.format("Output (loop %d) = %d", count, output));
             if(!loop) {
                 break;
             }
-            if(output == 0) {
+            if(output == OpCodeMachine.HALT) {
                 return maxOutput;
             }
             maxOutput = output;
@@ -52,12 +52,12 @@ public class Amplifiers {
         return output;
     }
 
-    public static int getMaxThrustersOutput(int[] phaseSettings, int[] instructions) {
+    public static long getMaxThrustersOutput(int[] phaseSettings, long[] instructions) {
         return getMaxThrustersOutput(phaseSettings, instructions, false);
     }
 
-    public static int getMaxThrustersOutput(int[] phaseSettings, int[] instructions, boolean feedbackLoop) {
-        int outputMax = 0;
+    public static long getMaxThrustersOutput(int[] phaseSettings, long[] instructions, boolean feedbackLoop) {
+        long outputMax = 0;
         int[] permMax = null;
         List<Integer> input = Arrays.asList (InputUtil.convertToIntegerArray(phaseSettings));
         Permutations<Integer> permutations = new Permutations <Integer> (input);
@@ -67,7 +67,7 @@ public class Amplifiers {
                     .mapToInt(Integer::intValue)
                     .toArray();
             Amplifiers amp = new Amplifiers(array, instructions, feedbackLoop);
-            int output = amp.getThrustersOutput();
+            long output = amp.getThrustersOutput();
             Log.d(String.format("Output (%s): %d", Arrays.toString(array), output));
             if (permMax == null || outputMax < output) {
                 permMax = array;
