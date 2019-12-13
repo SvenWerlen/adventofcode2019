@@ -32,15 +32,21 @@ public class Day09 {
      * Part 2
      */
     public static long part2() throws IOException {
-
-        return 0;
+        OpCodeMachine machine = new OpCodeMachine(InputUtil.convertToLongArray(InputUtil.readInputAsString(9, true)));
+        long code = machine.execute(2);
+        long lastValid = 0;
+        while(code != OpCodeMachine.HALT) {
+            lastValid = code;
+            code = machine.execute(2, 2, false);
+        }
+        return lastValid;
     }
 
     public static void main(String[] args) {
         Log.welcome();
         try {
             Log.i(String.format("BOOST keycode: %d", part1()));
-            //Log.i(part2());
+            Log.i(String.format("Coordinates of the distress signal: %d", part2()));
         } catch(Exception exc) {
             Log.w(String.format("Error during execution: %s", exc.getMessage()));
             exc.printStackTrace();

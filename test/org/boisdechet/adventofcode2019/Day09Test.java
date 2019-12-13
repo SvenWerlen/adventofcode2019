@@ -31,6 +31,7 @@ class Day09Test {
         assertEquals(1125899906842624L, machine.execute(0,0));
         // solutions (backwards compatibility)
         assertEquals(2350741403L, Day09.part1());
+        assertEquals(53088L, Day09.part2());
     }
 
 }
