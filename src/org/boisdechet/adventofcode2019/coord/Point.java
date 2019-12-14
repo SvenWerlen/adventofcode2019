@@ -25,4 +25,9 @@ public class Point {
         }
         return false;
     }
+
+    @Override
+    public int hashCode() {
+        return String.format("%d,%d",x,y).hashCode();
+    }
 }
