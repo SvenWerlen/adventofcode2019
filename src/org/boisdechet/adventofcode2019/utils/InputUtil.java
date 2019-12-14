@@ -1,5 +1,7 @@
 package org.boisdechet.adventofcode2019.utils;
 
+import org.boisdechet.adventofcode2019.coord.Point;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -8,12 +10,15 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class InputUtil {
 
     private static final String INPUTS_FOLDER = "inputs";
     private static final String INPUT_FILE_PATTERN = "day%d_%d.txt";
+    private static final String INPUT_SAMPLE_PATTERN = "day%d_s%d.txt";
 
     private static Path inputFolder;
 
@@ -24,13 +29,22 @@ public class InputUtil {
         return inputFolder;
     }
 
-    public static BufferedReader readInputSample(int day) throws IOException {
-        String filename = String.format(INPUT_FILE_PATTERN, day, 0);
+    public static BufferedReader readInputSample(int day, int sampleId) throws IOException {
+        String filename = String.format(INPUT_SAMPLE_PATTERN, day, sampleId);
         Path path = Paths.get(getInputsPath().toString(), filename);
         if( !path.toFile().exists() ) {
             throw new FileNotFoundException(String.format("Input sample file '%s' not found!", path.toString()));
         }
         return new BufferedReader(new FileReader(path.toFile()));
+    }
+
+    public static String readInputSampleAsString(int day, int sampleId) throws IOException {
+        String filename = String.format(INPUT_SAMPLE_PATTERN, day, sampleId);
+        Path path = Paths.get(getInputsPath().toString(), filename);
+        if( !path.toFile().exists() ) {
+            throw new FileNotFoundException(String.format("Input file '%s' not found!", path.toString()));
+        }
+        return Files.readString(path, StandardCharsets.UTF_8);
     }
 
     public static BufferedReader readInput(int day, boolean firstPart) throws IOException {
@@ -97,5 +111,27 @@ public class InputUtil {
             result[i] = Character.getNumericValue(value.charAt(i));
         }
         return result;
+    }
+
+    /**
+     * Reads input (string) and converts it to a list of coordinates
+     * @param text input string
+     * @param character character representing a point
+     * @return list of points (coordinates)
+     */
+    public static List<Point> convertInputAsCoordinates(String text, char character) {
+        List<Point> list = new ArrayList<>();
+        int y = 0;
+        for(String line : text.split("\n")) {
+            int x = 0;
+            for(char c : line.toCharArray()) {
+                if(c == character) {
+                    list.add(new Point(x,y));
+                }
+                x++;
+            }
+            y++;
+        }
+        return list;
     }
 }

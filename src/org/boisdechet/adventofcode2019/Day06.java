@@ -66,7 +66,7 @@ public class Day06 {
      * Part 0 (sample)
      */
     public static long part0() throws IOException {
-        BufferedReader input = InputUtil.readInputSample(6);
+        BufferedReader input = InputUtil.readInputSample(6,0);
         return getResult(getMap(input));
     }
 

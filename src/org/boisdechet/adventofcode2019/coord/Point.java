@@ -16,4 +16,13 @@ public class Point {
     public String toString() {
         return String.format("(%d,%d)", x, y);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o instanceof Point) {
+            Point p = (Point)o;
+            return x == p.x && y == p.y;
+        }
+        return false;
+    }
 }
