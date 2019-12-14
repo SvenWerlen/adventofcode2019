@@ -43,13 +43,14 @@ public class Day12 {
         while ((line = input.readLine()) != null) {
             moons.add(new Moon(line));
         }
-        return Moons.getStepsCountForFirstMatchSlow(moons);
+        return Moons.getStepsCountForFirstMatch(moons);
     }
 
     public static void main(String[] args) {
         Log.welcome();
         try {
             Log.i(String.format("Total energy of the system after 1000 steps: %d", part1()));
+            Log.i(String.format("Steps to reach first state: %d", part2()));
         } catch(Exception exc) {
             Log.w(String.format("Error during execution: %s", exc.getMessage()));
             exc.printStackTrace();

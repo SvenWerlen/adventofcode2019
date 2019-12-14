@@ -55,7 +55,6 @@ class Day12Test {
         list.add(m3);
         list.add(m4);
         assertEquals(2772, Moons.getStepsCountForFirstMatchVerySlow(Moons.cloneMoons(list)));
-        assertEquals(2772, Moons.getStepsCountForFirstMatchSlow(Moons.cloneMoons(list)));
         assertEquals(2772, Moons.getStepsCountForFirstMatch(Moons.cloneMoons(list)));
         list = new ArrayList<Moon>();
         m1 = new Moon("<x=-8, y=-10, z=0>");
@@ -66,11 +65,10 @@ class Day12Test {
         list.add(m2);
         list.add(m3);
         list.add(m4);
-        Log.DEBUG = true;
         assertEquals(4686774924L, Moons.getStepsCountForFirstMatch(Moons.cloneMoons(list)));
-        Log.DEBUG = false;
         // solutions (backwards compatibility)
         assertEquals(6227, Day12.part1());
+        assertEquals(331346071640472L, Day12.part2());
     }
 
 }

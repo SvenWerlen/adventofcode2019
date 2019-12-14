@@ -62,95 +62,50 @@ public class Moons {
         return buf.toString().hashCode();
     }
 
-    public static long getStepsCountForFirstMatchSlow(List<Moon> moonsList, int moonIdx) {
-        Moon moon = moonsList.get(moonIdx);
-        List<Moon> moons = Moons.cloneMoons(moonsList);
-        long steps = 0;
-        while(true) {
-            int count = 1;
-            Moons.step(moons);
-            while(!moons.get(moonIdx).equals(moon)) {
-                Moons.step(moons);
-                count++;
-            }
-            Log.d("Loop after " + count + " steps");
-            steps += count;
-            if(count == 1) {
-                break;
-            }
+    private static int hashX(List<Moon> moons) {
+        StringBuffer buf = new StringBuffer();
+        for(Moon m : moons) {
+            buf.append(m.x).append(':').append(m.vx).append(',');
         }
-        return steps;
+        return buf.toString().hashCode();
     }
 
-    public static long getStepsCountForFirstMatchSlow(List<Moon> moons) {
-        long lcm = 1;
-        for(int i=0; i<moons.size(); i++) {
-            long steps = getStepsCountForFirstMatchSlow(moons, i);
-            Log.i(String.format("Cycle for moon #%d is %d steps", i+1, steps));
-            lcm = MathUtil.leastCommonMultiple(lcm, steps);
+    private static int hashY(List<Moon> moons) {
+        StringBuffer buf = new StringBuffer();
+        for(Moon m : moons) {
+            buf.append(m.y).append(':').append(m.vy).append(',');
         }
-        return lcm;
+        return buf.toString().hashCode();
     }
 
+    private static int hashZ(List<Moon> moons) {
+        StringBuffer buf = new StringBuffer();
+        for(Moon m : moons) {
+            buf.append(m.z).append(':').append(m.vz).append(',');
+        }
+        return buf.toString().hashCode();
+    }
 
-    public static long getStepsCountForFirstMatch(List<Moon> moonsList, int moonIdx) {
-        Moon moon = moonsList.get(moonIdx);
-        List<Moon> moons = Moons.cloneMoons(moonsList);
-        long stepsX = 0;
+    private static long getStepsCountForFirstMatch(List<Moon> moons, int coord) {
+        moons = Moons.cloneMoons(moons);
+        long count = 0;
+        Set<Integer> match = new HashSet<>();
+        int hash = coord == 0 ? hashX(moons) : coord == 1 ? hashY(moons) : hashZ(moons);
+        match.add(hash);
         while(true) {
-            int count = 1;
+            count++;
             Moons.step(moons);
-            while(moons.get(moonIdx).x != moon.x) {
-                Moons.step(moons);
-                count++;
-            }
-            Log.d("Loop after " + count + " steps");
-            stepsX += count;
-            if(count == 1) {
-                break;
+            hash = coord == 0 ? hashX(moons) : coord == 1 ? hashY(moons) : hashZ(moons);
+            if(match.contains(hash)) {
+                return count;
             }
         }
-        moons = Moons.cloneMoons(moonsList);
-        long stepsY = 0;
-        while(true) {
-            int count = 1;
-            Moons.step(moons);
-            while(moons.get(moonIdx).y != moon.y) {
-                Moons.step(moons);
-                count++;
-            }
-            Log.d("Loop after " + count + " steps");
-            stepsY += count;
-            if(count == 1) {
-                break;
-            }
-        }
-        moons = Moons.cloneMoons(moonsList);
-        long stepsZ = 0;
-        while(true) {
-            int count = 1;
-            Moons.step(moons);
-            while(moons.get(moonIdx).z != moon.z) {
-                Moons.step(moons);
-                count++;
-            }
-            Log.d("Loop after " + count + " steps");
-            stepsZ += count;
-            if(count == 1) {
-                break;
-            }
-        }
-        Log.d(String.format("Loop after respectively (%d,%d,%d)", stepsX, stepsY, stepsZ));
-        return MathUtil.leastCommonMultiple(stepsX, stepsY, stepsZ);
     }
 
     public static long getStepsCountForFirstMatch(List<Moon> moons) {
-        long lcm = 1;
-        for(int i=0; i<moons.size(); i++) {
-            long steps = getStepsCountForFirstMatch(moons, i);
-            Log.i(String.format("Cycle for moon #%d is %d steps", i+1, steps));
-            lcm = MathUtil.leastCommonMultiple(lcm, steps);
-        }
-        return lcm;
+        long countX = getStepsCountForFirstMatch(Moons.cloneMoons(moons), 0);
+        long countY = getStepsCountForFirstMatch(Moons.cloneMoons(moons), 1);
+        long countZ = getStepsCountForFirstMatch(Moons.cloneMoons(moons), 2);
+        return MathUtil.leastCommonMultiple(countX, countY, countZ);
     }
 }
