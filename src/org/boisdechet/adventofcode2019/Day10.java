@@ -2,7 +2,6 @@ package org.boisdechet.adventofcode2019;
 
 import org.boisdechet.adventofcode2019.coord.AsteroidsMap;
 import org.boisdechet.adventofcode2019.coord.Point;
-import org.boisdechet.adventofcode2019.opcode.OpCodeMachine;
 import org.boisdechet.adventofcode2019.utils.InputUtil;
 import org.boisdechet.adventofcode2019.utils.Log;
 
@@ -14,27 +13,30 @@ import java.io.IOException;
  */
 public class Day10 {
 
+
     /**
      * Part 1
      */
-    public static long part1() throws IOException {
-        AsteroidsMap.BestLocation location = new AsteroidsMap(InputUtil.convertInputAsCoordinates(InputUtil.readInputAsString(10, true),'#')).getBestLocation();
-        Log.i(String.format("Best found location is %s", location.point));
-        return location.visibleAsteroids;
+    public static AsteroidsMap.Location part1() throws IOException {
+        AsteroidsMap.Location location = new AsteroidsMap(InputUtil.convertInputAsCoordinates(InputUtil.readInputAsString(10, true),'#')).getBestLocation();
+        return location;
     }
 
     /**
      * Part 2
      */
-    public static long part2() throws IOException {
-        return 0L;
+    public static long part2(Point from) throws IOException {
+        AsteroidsMap map = new AsteroidsMap(InputUtil.convertInputAsCoordinates(InputUtil.readInputAsString(10, true),'#'));
+        AsteroidsMap.Location loc = map.getVaporizedAsteroid(from, 200);
+        return loc.point.x*100+loc.point.y;
     }
 
     public static void main(String[] args) {
         Log.welcome();
         try {
-            Log.i(String.format("Number of asteroids that can be detected: %d", part1()));
-            //Log.i(String.format("Coordinates of the distress signal: %d", part2()));
+            AsteroidsMap.Location loc = part1();
+            Log.i(String.format("Number of asteroids that can be detected: %d", loc.visibleAsteroids));
+            Log.i(String.format("Coordinates of 200th asteroid vaporized: %d", part2(loc.point)));
         } catch(Exception exc) {
             Log.w(String.format("Error during execution: %s", exc.getMessage()));
             exc.printStackTrace();
