@@ -42,14 +42,19 @@ public class Day13 {
      * Part 2
      */
     public static long part2() throws IOException {
-        return 0;
+        long[] code = InputUtil.convertToLongArray(InputUtil.readInputAsString(13, true));
+        // play free
+        code[0] = 2;
+        // start game
+        ArcadeCabinet arcade = new ArcadeCabinet(new OpCodeMachine(code));
+        return arcade.playTillExit();
     }
 
     public static void main(String[] args) {
         Log.welcome();
         try {
             Log.i(String.format("Block tiles on the screen at the end of the game: %d", part1()));
-
+            Log.i(String.format("Score after the last block is broken: %d", part2()));
         } catch(Exception exc) {
             Log.w(String.format("Error during execution: %s", exc.getMessage()));
             exc.printStackTrace();

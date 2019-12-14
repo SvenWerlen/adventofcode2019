@@ -15,10 +15,9 @@ class Day13Test {
 
     @Test
     public void examples() throws Exception {
-        // part I
         // solutions (backwards compatibility)
         assertEquals(326, Day13.part1());
-
+        assertEquals(15988, Day13.part2());
     }
 
 }
