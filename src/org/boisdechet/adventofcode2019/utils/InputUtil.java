@@ -1,6 +1,7 @@
 package org.boisdechet.adventofcode2019.utils;
 
 import org.boisdechet.adventofcode2019.coord.Point;
+import org.boisdechet.adventofcode2019.fuel.Reaction;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -17,8 +18,7 @@ import java.util.stream.Stream;
 public class InputUtil {
 
     private static final String INPUTS_FOLDER = "inputs";
-    private static final String INPUT_FILE_PATTERN = "day%d_%d.txt";
-    private static final String INPUT_SAMPLE_PATTERN = "day%d_s%d.txt";
+    private static final String INPUT_FILE_PATTERN = "day%d_%s.txt";
 
     private static Path inputFolder;
 
@@ -30,25 +30,15 @@ public class InputUtil {
     }
 
     public static BufferedReader readInputSample(int day, int sampleId) throws IOException {
-        String filename = String.format(INPUT_SAMPLE_PATTERN, day, sampleId);
-        Path path = Paths.get(getInputsPath().toString(), filename);
-        if( !path.toFile().exists() ) {
-            throw new FileNotFoundException(String.format("Input sample file '%s' not found!", path.toString()));
-        }
-        return new BufferedReader(new FileReader(path.toFile()));
-    }
-
-    public static String readInputSampleAsString(int day, int sampleId) throws IOException {
-        String filename = String.format(INPUT_SAMPLE_PATTERN, day, sampleId);
-        Path path = Paths.get(getInputsPath().toString(), filename);
-        if( !path.toFile().exists() ) {
-            throw new FileNotFoundException(String.format("Input file '%s' not found!", path.toString()));
-        }
-        return Files.readString(path, StandardCharsets.UTF_8);
+        return readInput(day, "s" + sampleId);
     }
 
     public static BufferedReader readInput(int day, boolean firstPart) throws IOException {
-        String filename = String.format(INPUT_FILE_PATTERN, day, firstPart ? 1 : 2);
+        return readInput(day, firstPart ? "1" : "2");
+    }
+
+    public static BufferedReader readInput(int day, String fileId) throws IOException {
+        String filename = String.format(INPUT_FILE_PATTERN, day, fileId);
         Path path = Paths.get(getInputsPath().toString(), filename);
         if( !path.toFile().exists() ) {
             throw new FileNotFoundException(String.format("Input file '%s' not found!", path.toString()));
@@ -57,13 +47,40 @@ public class InputUtil {
     }
 
     public static String readInputAsString(int day, boolean firstPart) throws IOException {
-        String filename = String.format(INPUT_FILE_PATTERN, day, firstPart ? 1 : 2);
+        return readInputAsString(day, firstPart ? "1" : "2");
+    }
+
+    public static String readSampleAsString(int day, int sampleId) throws IOException {
+        return readInputAsString(day, "s" + sampleId);
+    }
+
+    public static String readInputAsString(int day, String fileId) throws IOException {
+        String filename = String.format(INPUT_FILE_PATTERN, day, fileId);
         Path path = Paths.get(getInputsPath().toString(), filename);
         if( !path.toFile().exists() ) {
             throw new FileNotFoundException(String.format("Input file '%s' not found!", path.toString()));
         }
         return Files.readString(path, StandardCharsets.UTF_8);
     }
+
+    public static List<Reaction> readSampleAsReactions(int day, int sampleId) throws IOException {
+        return readInputAsReactions(day, "s" + sampleId);
+    }
+
+    public static List<Reaction> readInputAsReactions(int day, boolean firstPart) throws IOException {
+        return readInputAsReactions(day, firstPart ? "1" : "2");
+    }
+
+    public static List<Reaction> readInputAsReactions(int day, String fileId) throws IOException {
+        BufferedReader reader = readInput(day, fileId);
+        List<Reaction> reactions = new ArrayList<>();
+        String line = null;
+        while((line = reader.readLine()) != null) {
+            reactions.add(new Reaction(line));
+        }
+        return reactions;
+    }
+
 
     public static int[] convertToIntArray(String value) {
         String[] instr = value.split(",");
