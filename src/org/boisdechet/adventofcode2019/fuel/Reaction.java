@@ -12,8 +12,8 @@ public class Reaction {
 
     public static class Chemical {
         public String key;
-        public int count;
-        public Chemical(String key, int count) {
+        public long count;
+        public Chemical(String key, long count) {
             this.key = key;
             this.count = count;
         }

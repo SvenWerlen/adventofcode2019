@@ -28,14 +28,16 @@ public class Day14 {
      * Part 2
      */
     public static long part2() throws IOException {
-        return 0L;
+        Reactions r = new Reactions(InputUtil.readInputAsReactions(14, true));
+        Map<String, Reaction.Chemical> stock = new HashMap<>();
+        return r.getMaxFuelForOre(1000000000000L);
     }
 
     public static void main(String[] args) {
         Log.welcome();
         try {
             Log.i(String.format("Minimum amount of ORE required to produce exactly 1 FUEL: %d", part1()));
-            //Log.i(String.format("Score after the last block is broken: %d", part2()));
+            Log.i(String.format("Maximum amount of FUEL for 1 trillion ORE: %d", part2()));
         } catch(Exception exc) {
             Log.w(String.format("Error during execution: %s", exc.getMessage()));
             exc.printStackTrace();

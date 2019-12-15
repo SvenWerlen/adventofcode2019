@@ -3,6 +3,7 @@ package org.boisdechet.adventofcode2019;
 import org.boisdechet.adventofcode2019.fuel.Reaction;
 import org.boisdechet.adventofcode2019.fuel.Reactions;
 import org.boisdechet.adventofcode2019.utils.InputUtil;
+import org.boisdechet.adventofcode2019.utils.Log;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -32,8 +33,18 @@ class Day14Test {
         stock.clear();
         assertEquals(2210736, r.getRequiredOre(new Reaction.Chemical(Reactions.TYPE_FUEL, 1), stock));
         // part II
+        r = new Reactions(InputUtil.readSampleAsReactions(14, 2));
+        stock.clear();
+        assertEquals(82892753, r.getMaxFuelForOre(1000000000000L));
+        r = new Reactions(InputUtil.readSampleAsReactions(14, 3));
+        stock.clear();
+        assertEquals(5586022, r.getMaxFuelForOre(1000000000000L));
+        r = new Reactions(InputUtil.readSampleAsReactions(14, 4));
+        stock.clear();
+        assertEquals(460664, r.getMaxFuelForOre(1000000000000L));
         // solutions (backwards compatibility)
-
+        assertEquals(532506, Day14.part1());
+        assertEquals(2595245, Day14.part2());
     }
 
 }
