@@ -55,5 +55,6 @@ public class Day08 {
         } catch(Exception exc) {
             Log.w(String.format("Error during execution: %s", exc.getMessage()));
         }
+        Log.bye();
     }
 }

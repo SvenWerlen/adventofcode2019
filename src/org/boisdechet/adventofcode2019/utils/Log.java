@@ -7,15 +7,29 @@ public class Log {
     public static boolean DEBUG = false;
     private static final String WELCOME_MESSAGE = "Avent of code 2019";
     private static final String SEPARATOR       = "==================";
+    private static final String BYE_MESSAGE     = "Execution time: %d %s";
 
     private static void printMessage(String text) {
         System.out.println(text);
     }
+    private static long startTime;
 
     public static void welcome() {
+        startTime = System.currentTimeMillis();
         printMessage(SEPARATOR);
         printMessage(WELCOME_MESSAGE);
         printMessage(SEPARATOR);
+    }
+
+    public static void bye() {
+        printMessage(SEPARATOR);
+        long time = System.currentTimeMillis()-startTime;
+        if(time > 2000) {
+            printMessage(String.format(BYE_MESSAGE, time /= 1000, "s"));
+        } else {
+            printMessage(String.format(BYE_MESSAGE, time, "ms"));
+        }
+
     }
 
     public static void i(String text) {

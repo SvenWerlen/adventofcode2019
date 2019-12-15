@@ -4,11 +4,10 @@ package org.boisdechet.adventofcode2019.coord;
 import org.boisdechet.adventofcode2019.utils.Log;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 public class AsteroidsMap {
 
-    private static final double ROUNDING = 0.001d;
+    private static final double ROUNDING = 0.00001d;
 
     private List<Point> points;
     private int maxX = 0;
@@ -34,12 +33,11 @@ public class AsteroidsMap {
         }
     }
 
-    public boolean hasLineOfSight(Point from, Point to) {
+    public boolean hasLineOfSightSlow(Point from, Point to) {
         for(Point p : points) {
-            Log.d(String.format("Is %s between %s and %s?", p, from, to));
+            //Log.d(String.format("Is %s between %s and %s?", p, from, to));
             // ignore from/to
             if(p.equals(from) || p.equals(to)) {
-                Log.d(String.format("Ignoring %s", p));
                 continue;
             }
             // check if point is in zone (between from and to)
@@ -57,10 +55,45 @@ public class AsteroidsMap {
         return true;
     }
 
+    public boolean hasLineOfSight(Point from, Point to, Set<Point> list) {
+        if(from.equals(to)) {
+            return true;
+        }
+        int idx = 0;
+        if(from.x != to.x) {
+            float dy = (float) (to.y - from.y) / (to.x - from.x);
+            while(true) {
+                idx++;
+                float curX = from.x + (from.x > to.x ? -idx : idx);
+                float curY = from.y + (from.x > to.x ? -idx : idx)*dy;
+                if(curX == to.x) {
+                    return true;
+                }
+                if(Math.abs(curY-Math.round(curY))<ROUNDING && list.contains(new Point((int)curX, (int)Math.round(curY)))) {
+                    return false;
+                }
+            }
+        }
+        else {
+            float dx = (float) (to.x - from.x) / (to.y - from.y);
+            while(true) {
+                idx++;
+                float curX = from.x + (from.x > to.x ? -idx : idx)*dx;
+                float curY = from.y + (from.x > to.x ? -idx : idx);
+                if(curY == to.y) {
+                    return true;
+                }
+                if(Math.abs(curX-Math.round(curX))<ROUNDING && list.contains(new Point((int)Math.round(curX), (int)curY))) {
+                    return false;
+                }
+            }
+        }
+    }
+
     public int getVisibleAsteroids(Point from) {
         int count = 0;
         for(Point to : points) {
-            if(!from.equals(to) && hasLineOfSight(from, to)) {
+            if(!from.equals(to) && hasLineOfSightSlow(from, to)) {
                 count++;
             }
         }
@@ -75,16 +108,32 @@ public class AsteroidsMap {
     public Location getBestLocation() {
         Location loc = new Location();
         Map<Point, Set<Point>> lineofsight = new HashMap<>();
+        Map<Point, Set<Point>> noLineofsight = new HashMap<>();
+        Set<Point> pList = new HashSet<>();
         // initialize
         for(Point from : points) {
             lineofsight.put(from, new HashSet<>());
+            noLineofsight.put(from, new HashSet<>());
+            pList.add(from);
         }
         // find all visible asteroids
-        for(Point from : points) {
-            for(Point to : points) {
-                if(!from.equals(to) && !lineofsight.get(from).contains(to) && hasLineOfSight(from, to)) {
+        for(int i=0; i<points.size(); i++) {
+            Point from = points.get(i);
+            Set<Point> ptSight = lineofsight.get(from);
+            Set<Point> ptNoSight = noLineofsight.get(from);
+            for(int j=i+1; j<points.size(); j++) {
+                Point to = points.get(j);
+                if(from.equals(to) || ptSight.contains(to) || ptNoSight.contains(to)) {
+                    continue;
+                }
+                if(hasLineOfSight(from, to, pList)) {
+                    //Log.d(String.format("%s can see %s", from, to));
                     lineofsight.get(from).add(to);
                     lineofsight.get(to).add(from);
+                } else {
+                    //Log.d(String.format("%s CANNOT see %s", from, to));
+                    noLineofsight.get(from).add(to);
+                    noLineofsight.get(to).add(from);
                 }
             }
         }
@@ -106,7 +155,7 @@ public class AsteroidsMap {
             if(angle < 0) {
                 throw new IllegalStateException(String.format("Angle not supposed to be negative! %f", angle));
             }
-            if(angle >= startAngle && (loc.point == null || angle < loc.angle) && hasLineOfSight(from, to)) {
+            if(angle >= startAngle && (loc.point == null || angle < loc.angle) && hasLineOfSightSlow(from, to)) {
                 loc.point = to;
                 loc.angle = angle;
             }

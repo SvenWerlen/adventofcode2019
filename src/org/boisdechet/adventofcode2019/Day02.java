@@ -70,7 +70,7 @@ public class Day02 {
                 intCode[2] = verb;
                 int output = executeIntCode(intCode);
                 if(output == desiredOutput) {
-                    Log.i(String.format("Solution found for noun %d and verb %d", noun, verb));
+                    Log.d(String.format("Solution found for noun %d and verb %d", noun, verb));
                     return (100 * noun) + verb;
                 }
             }
@@ -86,5 +86,6 @@ public class Day02 {
         } catch(Exception exc) {
             Log.w(String.format("Error during execution: %s", exc.getMessage()));
         }
+        Log.bye();
     }
 }

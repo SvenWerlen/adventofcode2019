@@ -41,5 +41,6 @@ public class Day10 {
             Log.w(String.format("Error during execution: %s", exc.getMessage()));
             exc.printStackTrace();
         }
+        Log.bye();
     }
 }

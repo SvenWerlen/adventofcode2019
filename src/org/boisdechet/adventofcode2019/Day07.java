@@ -36,5 +36,6 @@ public class Day07 {
         } catch(Exception exc) {
             Log.w(String.format("Error during execution: %s", exc.getMessage()));
         }
+        Log.bye();
     }
 }

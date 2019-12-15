@@ -7,8 +7,7 @@ import org.boisdechet.adventofcode2019.utils.InputUtil;
 import org.boisdechet.adventofcode2019.utils.Log;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,15 +19,26 @@ class Day10Test {
         List<Point> list = InputUtil.convertInputAsCoordinates(InputUtil.readSampleAsString(10,0),'#');
         assertEquals(10, list.size());
         AsteroidsMap map = new AsteroidsMap(list);
-        assertFalse(map.hasLineOfSight(new Point(0,2), new Point(4,2)));
-        assertTrue(map.hasLineOfSight(new Point(0,2), new Point(4,0)));
-        assertFalse(map.hasLineOfSight(new Point(4,0), new Point(4,3)));
+        Set<Point> points = new HashSet<>();
+        points.addAll(list);
+        assertTrue(map.hasLineOfSight(new Point(1,0), new Point(1,2), points));
+        assertTrue(map.hasLineOfSight(new Point(1,0), new Point(4,4), points));
+        assertFalse(map.hasLineOfSight(new Point(0,2), new Point(4,2), points));
+        assertTrue(map.hasLineOfSight(new Point(0,2), new Point(4,0), points));
+        assertFalse(map.hasLineOfSight(new Point(4,0), new Point(4,3), points));
         assertEquals(7, map.getVisibleAsteroids(new Point(1,0)));
         assertEquals(8, map.getVisibleAsteroids(new Point(3,4)));
         assertEquals(0d, AsteroidsMap.getAngle(new Point(5,5), new Point(5,2)));
         assertEquals(Math.PI/2, AsteroidsMap.getAngle(new Point(5,5), new Point(10,5)));
         assertEquals(Math.PI, AsteroidsMap.getAngle(new Point(5,5), new Point(5,10)));
         assertEquals(3*Math.PI/2, AsteroidsMap.getAngle(new Point(5,5), new Point(0,5)));
+
+        list = InputUtil.convertInputAsCoordinates(InputUtil.readSampleAsString(10,1),'#');
+        map = new AsteroidsMap(list);
+        points = new HashSet<>();
+        points.addAll(list);
+        assertTrue(map.hasLineOfSight(new Point(7,2), new Point(1,4), points));
+
         map = new AsteroidsMap(InputUtil.convertInputAsCoordinates(InputUtil.readSampleAsString(10,5),'#'));
         AsteroidsMap.Location loc = map.getNextAsteroid(new Point(8,3),0d);
         assertEquals(new Point(8,1), loc.point);
