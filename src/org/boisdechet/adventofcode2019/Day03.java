@@ -47,7 +47,7 @@ public class Day03 {
         if(nearest == null) {
             throw new IllegalStateException("No cross found!");
         }
-        Log.i(String.format("Nearest cross found at %s", nearest.toString()));
+        Log.d(String.format("Nearest cross found at %s", nearest.toString()));
         return nearest.manhattanDistance(0, 0);
     }
 
@@ -84,7 +84,7 @@ public class Day03 {
         if(nearest == null) {
             throw new IllegalStateException("No cross found!");
         }
-        Log.i(String.format("Nearest cross found at %s", nearest.toString()));
+        Log.d(String.format("Nearest cross found at %s", nearest.toString()));
         return minDist;
     }
 
