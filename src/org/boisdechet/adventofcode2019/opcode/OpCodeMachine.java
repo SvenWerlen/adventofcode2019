@@ -5,7 +5,7 @@ import org.boisdechet.adventofcode2019.utils.Log;
 import java.util.HashMap;
 import java.util.Map;
 
-public class OpCodeMachine {
+public class OpCodeMachine implements Cloneable {
 
     public static final long HALT = Integer.MIN_VALUE;
 
@@ -14,6 +14,8 @@ public class OpCodeMachine {
     private int curInstr = 0;
     private int relBase = 0;
     Map<Integer, Long> outMemory;
+
+    public OpCodeMachine() {}
 
     public OpCodeMachine(long[] instructions) {
         this.orig = instructions;
@@ -201,5 +203,23 @@ public class OpCodeMachine {
                     throw new IllegalStateException(String.format("Opcode %d is invalid!", opcode.getOpCode()));
             }
         }
+    }
+
+    @Override
+    public OpCodeMachine clone() {
+        OpCodeMachine machine = new OpCodeMachine();
+        // copy instructions
+        machine.orig = new long[this.orig.length];
+        System.arraycopy(this.orig, 0, machine.orig, 0, this.orig.length);
+        machine.instr = new long[this.instr.length];
+        System.arraycopy(this.instr, 0, machine.instr, 0, this.instr.length);
+        machine.curInstr = this.curInstr;
+        machine.relBase = this.relBase;
+        // copy out memory
+        machine.outMemory = new HashMap<>();
+        for(Integer key : this.outMemory.keySet()) {
+            machine.outMemory.put(key, this.outMemory.get(key));
+        }
+        return machine;
     }
 }

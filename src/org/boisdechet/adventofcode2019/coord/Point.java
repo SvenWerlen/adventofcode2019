@@ -1,6 +1,6 @@
 package org.boisdechet.adventofcode2019.coord;
 
-public class Point {
+public class Point implements Cloneable {
     public int x, y;
 
     public Point(int x, int y) {
@@ -29,5 +29,10 @@ public class Point {
     @Override
     public int hashCode() {
         return String.format("%d,%d",x,y).hashCode();
+    }
+
+    @Override
+    public Point clone() {
+        return new Point(this.x, this.y);
     }
 }
