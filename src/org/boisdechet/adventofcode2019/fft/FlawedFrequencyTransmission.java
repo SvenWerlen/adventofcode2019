@@ -9,26 +9,17 @@ import java.util.Map;
 
 public class FlawedFrequencyTransmission {
 
+    private static final int DIGITS = 8;
     private static final int[] BASE_PATTERN = {0, 1, 0, -1};
 
     private Map<Integer, Integer[]> patterns;
     private int[] pattern;
     private int[] signal;
-    private int repeat;
-    private int offset;
 
     public FlawedFrequencyTransmission(int[] signal) {
         this.patterns = new HashMap<>();
         this.pattern = BASE_PATTERN;
         this.signal = signal;
-        this.offset = 0;
-        this.repeat = 0;
-    }
-
-    public FlawedFrequencyTransmission(int[] signal, int repeated, int offset) {
-        this(signal);
-        this.offset = offset;
-        this.repeat = repeated;
     }
 
     public synchronized  Integer[] getPattern(int idx) {
@@ -65,27 +56,6 @@ public class FlawedFrequencyTransmission {
         Integer[] patternFinal = getPattern(idx);
         // compute addition
         int total = computeSignalSum(input, patternFinal);
-        // repeat
-        if(repeat > 0) {
-            int firstTotal = total;                             // first signal is unique due to 1 bit shift
-            int startIdx = input.length % patternFinal.length;  // when startIdx will be identical, extrapolation is possible
-            int loop = 1;
-            int sigTotal = 0;
-            while((loop*input.length % patternFinal.length != startIdx)) {
-                sigTotal += computeSignalSum(input, patternFinal);
-                loop++;
-            }
-            // extrapolate
-            int extrapoleLoops = (repeat-1)/loop;
-            int extrapoleRemains = repeat-1 - extrapoleLoops*loop;
-            total = firstTotal + extrapoleLoops * sigTotal;
-            Log.d(String.format("Extrapolation possible after %d loops, means %d times and then %d remaining", loop, extrapoleLoops, extrapoleRemains));
-            // finalize for the remaining iterations
-            for(int l=0; l<extrapoleRemains; l++) {
-                total += computeSignalSum(input, patternFinal);
-            }
-
-        }
         if(Log.DEBUG) { Log.d(String.format("Sum result for index %d is %s", idx, total)); }
         // extract last digit
         return Math.abs(total % 10);
@@ -101,18 +71,39 @@ public class FlawedFrequencyTransmission {
             input=output;
         }
         String result = InputUtil.convertToString(input);
-        if(repeat > 0) {
-            StringBuffer buf = new StringBuffer();
-            for(int i=0; i<repeat; i++) {
-                buf.append(result);
+        return result.length() <= DIGITS ? result : result.substring(0, DIGITS);
+    }
+
+    /**
+     * Only works with given pattern
+     */
+    public static String cleanSignal(int[] signal, int phases, int repeat, int offset) {
+        if(repeat == 0 || offset == 0) {
+            return new FlawedFrequencyTransmission(signal).cleanSignal(phases);
+        }
+
+        // prepare signal
+        int[] megaSignal = new int[signal.length*repeat];
+        for(int i=0; i<repeat; i++) { System.arraycopy(signal, 0, megaSignal, i*signal.length, signal.length); }
+
+        int offsetVal = Integer.parseInt(InputUtil.convertToString(signal).substring(0,offset));
+        if(offsetVal < megaSignal.length / 2) {
+            throw new IllegalStateException(String.format("Signal offset is not large enough! (%d - %d)", offsetVal, megaSignal.length));
+        }
+
+        // compute 2nd half for X iterations (digit = sum of last digits, starting from index+1)
+        for(int i=0; i<phases; i++) {
+            int sum = 0;
+            for(int idx=megaSignal.length-1; idx>=offsetVal; idx--) {
+                sum += megaSignal[idx];
+                megaSignal[idx] = sum % 10;
             }
-            result = buf.toString();
         }
-        if(offset > 0) {
-            long offsetVal = Long.parseLong(InputUtil.convertToString(this.signal).substring(0,offset));
-            Log.i(String.format("Offset is %d", offsetVal));
-            result = result.substring(Math.toIntExact(offsetVal));
-        }
-        return result.length() <= 8 ? result : result.substring(0, 8);
+
+        // extract output value
+        int[] result = new int[DIGITS];
+        System.arraycopy(megaSignal, offsetVal, result, 0, DIGITS);
+
+        return InputUtil.convertToString(result);
     }
 }
