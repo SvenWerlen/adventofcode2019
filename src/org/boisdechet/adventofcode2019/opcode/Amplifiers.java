@@ -31,12 +31,12 @@ public class Amplifiers {
         // build amplifiers
         OpCodeMachine[] amplifiers = new OpCodeMachine[sequence.length];
         for(int idx=0; idx<sequence.length; idx++) {
-            amplifiers[idx] = new OpCodeMachine(instructions);
+            amplifiers[idx] = new OpCodeMachine(instructions, sequence[idx]);
         }
         Log.d(String.format("Sequence: %s", InputUtil.convertToString(sequence)));
         while(true) {
             for (int idx=0; idx<sequence.length; idx++) {
-                output = amplifiers[idx].execute(count == 1 ? sequence[idx] : Math.toIntExact(output), Math.toIntExact(output), false);
+                output = amplifiers[idx].execute(Math.toIntExact(output));
                 Log.d(String.format("Output (amp #%d) = %d", idx, output));
             }
             Log.d(String.format("Output (loop %d) = %d", count, output));

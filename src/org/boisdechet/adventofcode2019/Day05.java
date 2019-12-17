@@ -20,7 +20,7 @@ public class Day05 {
         OpCodeMachine machine = new OpCodeMachine(instructions);
         long result = 0;
         while(result == 0) {
-            result = machine.execute(1,1, false);
+            result = machine.execute(1);
         }
         return result;
     }

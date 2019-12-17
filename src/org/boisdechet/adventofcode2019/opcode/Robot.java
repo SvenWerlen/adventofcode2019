@@ -53,11 +53,11 @@ public class Robot {
 
     public Output next(int curColor) {
         Output output = new Output();
-        long result1 = prog.execute(curColor, curColor, false);
+        long result1 = prog.execute(curColor);
         if(result1 == OpCodeMachine.HALT) {
             return null;
         }
-        long result2 = prog.execute(curColor, curColor, false);
+        long result2 = prog.execute(curColor);
         if(result2 == OpCodeMachine.HALT) {
             return null;
         }

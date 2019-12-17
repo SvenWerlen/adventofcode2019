@@ -21,7 +21,7 @@ public class Robot implements Cloneable {
         this.machine = new OpCodeMachine(instructions);
     }
 
-    public long move(int direction) { return this.machine.execute(direction, direction, false); }
+    public long move(int direction) { return this.machine.execute(direction); }
 
     @Override
     protected Robot clone() {

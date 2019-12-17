@@ -67,15 +67,15 @@ public class ArcadeCabinet {
 
     public Output next(int input) {
         ArcadeCabinet.Output output = new ArcadeCabinet.Output();
-        long result1 = prog.execute(input, input, false);
+        long result1 = prog.execute(input);
         if(result1 == OpCodeMachine.HALT) {
             return null;
         }
-        long result2 = prog.execute(input, input, false);
+        long result2 = prog.execute(input);
         if(result2 == OpCodeMachine.HALT) {
             return null;
         }
-        long result3 = prog.execute(input, input, false);
+        long result3 = prog.execute(input);
         if(result3 == OpCodeMachine.HALT) {
             return null;
         }

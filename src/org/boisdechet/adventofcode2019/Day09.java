@@ -1,12 +1,10 @@
 package org.boisdechet.adventofcode2019;
 
-import org.boisdechet.adventofcode2019.image.SpaceImage;
 import org.boisdechet.adventofcode2019.opcode.OpCodeMachine;
 import org.boisdechet.adventofcode2019.utils.InputUtil;
 import org.boisdechet.adventofcode2019.utils.Log;
 
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * Solver for 2019 Day 9
@@ -23,7 +21,7 @@ public class Day09 {
         long lastValid = 0;
         while(code != OpCodeMachine.HALT) {
             lastValid = code;
-            code = machine.execute(1,1, false);
+            code = machine.execute(1);
         }
         return lastValid;
     }
@@ -37,7 +35,7 @@ public class Day09 {
         long lastValid = 0;
         while(code != OpCodeMachine.HALT) {
             lastValid = code;
-            code = machine.execute(2, 2, false);
+            code = machine.execute(2);
         }
         return lastValid;
     }
