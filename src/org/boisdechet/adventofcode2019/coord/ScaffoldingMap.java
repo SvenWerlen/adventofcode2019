@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class ScaffoldingMap {
 
@@ -23,25 +24,62 @@ public class ScaffoldingMap {
 
     private int maxX;
     private int maxY;
+    private long output;
     private Map<Point, Integer> map;
 
+    public static class Step {
+        public boolean turnLeft;
+        public int stepCount;
+
+        public Step(int stepCount, boolean turnLeft) {
+            this.stepCount = stepCount;
+            this.turnLeft = turnLeft;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("%s%d", turnLeft ? "L" : "R", stepCount);
+        }
+    }
+
     public ScaffoldingMap(long[] instructions) {
+        this(instructions, null);
+    }
+
+    public ScaffoldingMap(long[] instructions, String input) {
         map = new HashMap<>();
-        OpCodeMachine m = new OpCodeMachine(instructions);
+        OpCodeMachine m;
+        if(input == null) {
+            m = new OpCodeMachine(instructions);
+        } else {
+            int[] inputs = new int[input.length()];
+            for(int i=0; i<input.length(); i++) {
+                inputs[i] = (int)input.charAt(i);
+            }
+            m = new OpCodeMachine(instructions, inputs);
+        }
         long code;
         int x = 0; int y = 0;
-        while((code = m.execute(0)) != OpCodeMachine.HALT) {
-            if(code != 46 && code != 10) {
+
+        while ((code = m.execute(0)) != OpCodeMachine.HALT) {
+            if (code != 46 && code != 10) {
                 map.put(new Point(x, y), Math.toIntExact(code));
             }
             x++;
-            if(code == 10) {
+            if (code == 10) {
                 y++;
                 maxX = Math.max(maxX, x);
                 x = 0;
             }
+            if (code > 255) {
+                output = code;
+            }
         }
         maxY = y;
+    }
+
+    public long getOutput() {
+        return output;
     }
 
     private static boolean isScaff(Map<Point, Integer> map, Point point, boolean unvisitedOnly) {
@@ -98,7 +136,6 @@ public class ScaffoldingMap {
     }
 
     public List<Point> buildPath() {
-        List<Point> list = new ArrayList<>();
         // find start
         Point start = null;
         for(Point p : map.keySet()) {
@@ -111,7 +148,79 @@ public class ScaffoldingMap {
         List<Point> path = followPath(start, map, DIRECTION_NORTH);
         Log.d(String.format("End point is %s", path.get(path.size()-1)));
         Log.d(dumpGrid(map));
-        return list;
+        return path;
+    }
+
+    public static List<Step> stepsFromPath(List<Point> path) {
+        List<Step> steps = new ArrayList<>();
+        Point prevPt = null;
+        int curDir = DIRECTION_NORTH;
+        int stepCount = 1;
+        boolean prevTurnLeft = false;
+        for(Point p : path) {
+            // first point
+            if(prevPt == null) {
+                prevPt = p;
+                continue;
+            }
+
+            // continue
+            if((curDir == DIRECTION_NORTH && p.y == prevPt.y-1) ||
+                    (curDir == DIRECTION_SOUTH && p.y == prevPt.y+1) ||
+                    (curDir == DIRECTION_EAST && p.x == prevPt.x+1) ||
+                    (curDir == DIRECTION_WEST && p.x == prevPt.x-1)) {
+                stepCount++;
+            }
+            // turn
+            else {
+                if(stepCount > 1) {
+                    steps.add(new Step(stepCount, prevTurnLeft));
+                }
+                switch(curDir) {
+                    case DIRECTION_NORTH:
+                        if(p.x == prevPt.x-1) {
+                            curDir = DIRECTION_WEST;
+                            prevTurnLeft = true;
+                        } else {
+                            curDir = DIRECTION_EAST;
+                            prevTurnLeft = false;
+                        }
+                        break;
+                    case DIRECTION_SOUTH:
+                        if(p.x == prevPt.x+1) {
+                            curDir = DIRECTION_EAST;
+                            prevTurnLeft = true;
+                        } else {
+                            curDir = DIRECTION_WEST;
+                            prevTurnLeft = false;
+                        }
+                        break;
+                    case DIRECTION_EAST:
+                        if(p.y == prevPt.y+1) {
+                            curDir = DIRECTION_SOUTH;
+                            prevTurnLeft = false;
+                        } else {
+                            curDir = DIRECTION_NORTH;
+                            prevTurnLeft = true;
+                        }
+                        break;
+                    case DIRECTION_WEST:
+                        if(p.y == prevPt.y-1) {
+                            curDir = DIRECTION_NORTH;
+                            prevTurnLeft = false;
+                        } else {
+                            curDir = DIRECTION_SOUTH;
+                            prevTurnLeft = true;
+                        }
+                        break;
+                }
+
+                stepCount = 1;
+            }
+            prevPt = p;
+        }
+        steps.add(new Step(stepCount, prevTurnLeft));
+        return steps;
     }
 
     public int alignParametersSum() {

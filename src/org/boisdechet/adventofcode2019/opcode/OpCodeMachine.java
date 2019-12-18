@@ -13,8 +13,8 @@ public class OpCodeMachine implements Cloneable {
     private long[] instr;
     private int curInstr;
     private int relBase;
-    private int paramInit;
-    private boolean paramInitUsed;
+    private int[] paramInit;
+    private int paramInitIdx;
     Map<Integer, Long> outMemory;
 
     private OpCodeMachine() {
@@ -27,11 +27,16 @@ public class OpCodeMachine implements Cloneable {
         outMemory = new HashMap<>();
         curInstr = 0;
         relBase = 0;
-        paramInit = -1;
-        paramInitUsed = false;
+        paramInit = null;
+        paramInitIdx = 0;
     }
 
     public OpCodeMachine(long[] instructions, int paramInit) {
+        this(instructions);
+        this.paramInit = new int[]{ paramInit };
+    }
+
+    public OpCodeMachine(long[] instructions, int[] paramInit) {
         this(instructions);
         this.paramInit = paramInit;
     }
@@ -95,6 +100,7 @@ public class OpCodeMachine implements Cloneable {
         System.arraycopy(this.orig, 0, instr, 0, this.orig.length);
         curInstr = 0;
         relBase = 0;
+        paramInitIdx = 0;
         return this;
     }
 
@@ -133,8 +139,12 @@ public class OpCodeMachine implements Cloneable {
                 case OpCode.OP_IN: // 3
                     check(opcode.getParam1Mode() != OpCode.MODE_IMMEDIATE, "Invalid mode for 'In' instruction.");
                     dest = Math.toIntExact(instr[curInstr+1]);
-                    int param = !paramInitUsed && paramInit >= 0  ? this.paramInit : parameter;
-                    paramInitUsed = true;
+                    int param = parameter;
+                    if(paramInit != null && paramInitIdx < paramInit.length) {
+                        param = this.paramInit[paramInitIdx];
+                        paramInitIdx++;
+                    }
+                    Log.d(String.format("Input required! Giving %s (%d)", param == '\n' ? "\\n" : (char)param, param));
                     setValue(dest, param, opcode.getParam1Mode());
                     Log.d(String.format("In: [%d] = %d", dest, param));
                     curInstr += 2;
@@ -210,7 +220,7 @@ public class OpCodeMachine implements Cloneable {
         machine.curInstr = this.curInstr;
         machine.relBase = this.relBase;
         machine.paramInit = this.paramInit;
-        machine.paramInitUsed = this.paramInitUsed;
+        machine.paramInitIdx = this.paramInitIdx;
         // copy out memory
         machine.outMemory = new HashMap<>();
         for(Integer key : this.outMemory.keySet()) {
