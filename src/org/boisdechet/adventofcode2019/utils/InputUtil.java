@@ -114,6 +114,14 @@ public class InputUtil {
         return buf.toString();
     }
 
+    public static String convertToString(Object[] value) {
+        StringBuffer buf = new StringBuffer();
+        for(Object v : value) {
+            buf.append(v);
+        }
+        return buf.toString();
+    }
+
     public static Integer[] convertToIntegerArray(int[] intArray) {
         Integer[] result = new Integer[intArray.length];
         for (int i = 0; i < intArray.length; i++) {
