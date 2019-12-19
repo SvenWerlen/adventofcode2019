@@ -5,6 +5,9 @@ import org.boisdechet.adventofcode2019.utils.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Dijkstra: simple implementation
+ */
 public class Dijkstra {
 
     private List<INodeObject> objects;
@@ -28,7 +31,7 @@ public class Dijkstra {
             if(obj == dstObj) { dst = node; }
         }
         // check that source and destination are part of the list
-        if(src == null) {
+        if(src == null || dst == null) {
             throw new IllegalStateException("Source or Destination are not included in list!");
         }
         // algorithm
@@ -43,7 +46,7 @@ public class Dijkstra {
             Log.d(String.format("Current node is %s with distance %d", curNode, curNode.getDistance()));
             // compute distances for nodes "around"
             for(Node n : nodes) {
-                if(curNode.getObject().pathExists(curNode, n)) {
+                if(curNode.getObject().pathExists(n.getObject())) {
                     int dist = curNode.getObject().getDistanceTo(n.getObject());
                     Log.d(String.format("Path exists between %s and %s (dist = %d)", curNode, n, dist));
                     if(curNode.getDistance() + dist < n.getDistance()) {

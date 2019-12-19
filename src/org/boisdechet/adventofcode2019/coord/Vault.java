@@ -1,9 +1,9 @@
 package org.boisdechet.adventofcode2019.coord;
 
-import org.boisdechet.adventofcode2019.dijstra.Dijkstra;
+import jdk.jshell.spi.ExecutionControl;
+import org.boisdechet.adventofcode2019.dijstra.DijkstraDynamic;
 import org.boisdechet.adventofcode2019.dijstra.INodeObject;
 import org.boisdechet.adventofcode2019.dijstra.Node;
-import org.boisdechet.adventofcode2019.utils.InputUtil;
 import org.boisdechet.adventofcode2019.utils.Log;
 
 import java.util.*;
@@ -20,7 +20,7 @@ public class Vault {
     private Point start;
     private int[][] map;
 
-    private Map<Integer, Key> keys;
+    private Map<Character, Key> keys;
 
     public static class Result {
         List<Key> path = new ArrayList<>();
@@ -28,16 +28,16 @@ public class Vault {
     }
 
     public static class Key implements INodeObject {
-        int id;
+        Character id;
         Point position;
-        Map<Integer, Integer> distances;
-        Map<Integer, Set<Integer>> requires;
+        Map<Character, Integer> distances;
+        Map<Character, Set<Character>> requires;
 
         public char getId() {
-            return (char)(id+'a');
+            return id;
         }
 
-        public Key(int id, Point position) {
+        public Key(Character id, Point position) {
             this.id = id;
             this.position = position;
             this.distances = new HashMap<>();
@@ -45,34 +45,13 @@ public class Vault {
         }
 
         @Override
-        public boolean pathExists(Node curNode, Node obj) {
-            Key dest = (Key)obj.getObject();
-            Log.d(String.format("Checking dependencies between %s and %s", curNode, obj));
-            if(!dest.distances.containsKey(id)) {
-                return false;
-            }
-            // check if dependencies in path
-            for(Integer dep : dest.requires.get(id)) {
-                Log.d(String.format("- Dependency %s", (char)(dep+'a')));
-                boolean reqMeet = false;
-                Node cur = curNode;
-                while(cur != null) {
-                    Key pathEl = (Key)cur.getObject();
-                    Log.d(String.format("-> Path %s", pathEl.getId()));
-                    if(pathEl.id == dep) {
-                        reqMeet = true;
-                        break;
-                    }
-                    cur = cur.getPreviousNode();
-                }
-                if(!reqMeet) {
-                    Log.d(String.format("Dependency %s not meet!", (char)(dep+'a')));
-                    return false;
-                } else {
-                    Log.d(String.format("Dependency %s meet!", (char)(dep+'a')));
-                }
-            }
-            return true;
+        public String getUniqueId() {
+            return "" + id;
+        }
+
+        @Override
+        public boolean pathExists(INodeObject obj) {
+            throw new IllegalStateException("Not implemented! Don't use simple Dijkstra with Keys");
         }
 
         @Override
@@ -82,32 +61,82 @@ public class Vault {
 
         @Override
         public String toString() {
-            return "" + getId();
-        }
-
-        @Override
-        public int hashCode() {
-            return getId();
+            return getUniqueId();
         }
 
         public String toFullString() {
             StringBuffer buf = new StringBuffer();
-            List<Integer> ids = new ArrayList<>(distances.keySet());
+            List<Character> ids = new ArrayList<>(distances.keySet());
             Collections.sort(ids);
-            for(Integer id : ids) {
-                buf.append((char)(id+'a')).append('(');
+            for(Character id : ids) {
+                buf.append(id).append('(');
                 buf.append(distances.getOrDefault(id, 0));
                 buf.append(":").append(dumpKeys(requires.getOrDefault(id, new HashSet<>()))).append("), ");
             }
-            return String.format("%s %s with distances to %s", (char)(id+'a'), position.toString(), buf.toString());
+            return String.format("%s %s with distances to %s", id, position.toString(), buf.toString());
         }
 
-        public static String dumpKeys(Set<Integer> keys) {
+        public static String dumpKeys(Set<Character> keys) {
             StringBuffer buf = new StringBuffer();
-            for(int k : keys) {
-                buf.append((char)(k+'A'));
+            for(Character k : keys) {
+                buf.append(k);
             }
             return buf.toString();
+        }
+    }
+
+    public static class VaultDijkstraController implements DijkstraDynamic.Controller {
+
+        private List<Key> keys;
+
+        private VaultDijkstraController(List<Key> keys) {
+            this.keys = keys;
+        }
+
+        @Override
+        public List<INodeObject> getConnectedNodes(Node from) {
+            // build available keys
+            Map<Character, Key> hasKeys = new HashMap<>();
+            Node cur = from;
+            while(cur != null) {
+                Key k = (Key)cur.getObject();
+                hasKeys.put(k.getId(), k);
+                cur = cur.getPreviousNode();
+            }
+
+            // build connected nodes
+            List<INodeObject> result = new ArrayList<>();
+            Key curKey = (Key)from.getObject();
+            for(Key k : keys) {
+                if(!hasKeys.containsKey(k.getId())) {
+                    // check dependencies
+                    boolean depOK = true;
+                    for(Character dep : curKey.requires.getOrDefault(k.id, new HashSet<>())) {
+                        if(!hasKeys.containsKey(dep)) {
+                            depOK = false; break;
+                        }
+                    }
+                    if(depOK) {
+                        result.add(k);
+                    }
+                }
+            }
+            return result;
+        }
+
+        @Override
+        public int getDistance(Node from, INodeObject to) {
+            return from.getObject().getDistanceTo(to);
+        }
+
+        @Override
+        public boolean targetReached(Node target) {
+            int count = 1;
+            Node curNode = target;
+            while((curNode = curNode.getPreviousNode()) != null) {
+                count++;
+            }
+            return count == keys.size();
         }
     }
 
@@ -128,8 +157,7 @@ public class Vault {
                         if(c >= 'A' && c <= 'Z') {
                             map[y][x] = TYPE_DOOR + (c-'A');
                         } else if(c >= 'a' && c <= 'z') {
-                            int keyId = c-'a';
-                            keys.put(keyId, new Key(keyId, new Point(x,y)));
+                            keys.put(c, new Key(c, new Point(x,y)));
                             map[y][x] = TYPE_KEY + (c-'a');
                         } else {
                             throw new IllegalStateException(String.format("Illegal map character %s", c));
@@ -143,7 +171,7 @@ public class Vault {
         for(Key k : keys.values()) {
             fillDistances(k);
         }
-        Key source = new Key((int)'@'-'a', start);
+        Key source = new Key('@', start);
         fillDistances(source);
         keys.put(source.id, source);
     }
@@ -153,7 +181,7 @@ public class Vault {
             if(k.id == curkey.id || k.distances.containsKey(curkey.id)) {
                 continue;
             }
-            Set<Integer> deps = new HashSet<>();
+            Set<Character> deps = new HashSet<>();
             int distance = getDistance(curkey.position, k.position, deps);
             if(distance < Integer.MAX_VALUE) {
                 curkey.distances.put(k.id, distance);
@@ -177,7 +205,7 @@ public class Vault {
         else { throw new IllegalStateException(String.format("Path couldn't be found for dist %d!", dist)); }
     }
 
-    private int getDistance(Point src, Point dest, Set<Integer> deps) {
+    private int getDistance(Point src, Point dest, Set<Character> deps) {
         int[][] minDist = new int[map.length][map[0].length];
         for(int y = 0; y < map.length; y++) { Arrays.fill(minDist[y], Integer.MAX_VALUE); }
         minDist[src.y][src.x]=1;
@@ -196,7 +224,7 @@ public class Vault {
                             // find dependencies
                             for(Point p : path) {
                                 if(map[p.y][p.x] >= TYPE_DOOR && map[p.y][p.x] <= TYPE_DOOR + 'A') {
-                                    deps.add(map[p.y][p.x] - TYPE_DOOR);
+                                    deps.add((char) ('a' + map[p.y][p.x] - TYPE_DOOR));
                                 }
                             }
                             return steps-1;
@@ -247,62 +275,13 @@ public class Vault {
     }
 
     /**
-     * Brute-force approach
+     * Dijkstra
      */
     public int minStepsToCollectAllKeys() {
-        Set<Node> list = new HashSet<>();
-        for(Key k : keys.values()) {
-            if(k.getId() != '@') {
-                list.add(new Node(k));
-            }
-        }
-        Node start = new Node(keys.get(((int)'@'-'a')));
-        start.setDistance(0);
-        Node best = minStepsToCollectAllKeys(start, list, Integer.MAX_VALUE);
-        return best.getDistance();
+        DijkstraDynamic.Controller controller = new Vault.VaultDijkstraController(new ArrayList<>(keys.values()));
+        Node end = new DijkstraDynamic(controller).getShortestPath(keys.get('@'));
+        return end.getDistance();
     }
-
-    public Node minStepsToCollectAllKeys(Node from, Set<Node> remaining, int bestDistance) {
-        //Log.i(String.format("Step %s (%d) with %d remaining and best distance %s", from.toString(), from.getDistance(), remaining.size(), bestDistance == Integer.MAX_VALUE ? "-" : String.valueOf(bestDistance)));
-        if(from.getDistance() >= bestDistance) {
-            return null;
-        }
-        else if(remaining.isEmpty()) {
-            Log.i(String.format("Best distance found is %d", from.getDistance()));
-            return from;
-        }
-        // prepare all nodes
-        Map<Integer, Node> nodesByDistance = new HashMap<>();
-        for(Node n : remaining) {
-            // explore that path
-            if(from.getObject().pathExists(from, n)) {
-                nodesByDistance.put(from.getObject().getDistanceTo(n.getObject()), n);
-            }
-        }
-        // try each by trying the one with minimal distance first
-        List<Integer> distances = new ArrayList<>(nodesByDistance.keySet());
-        Collections.sort(distances);
-        Node bestNode = null;
-        for(Integer d : distances) {
-            Node node = nodesByDistance.get(d);
-            Node next = new Node(node.getObject());
-            next.setDistance(from.getDistance() + d);
-            next.setPreviousNode(from);
-            Set<Node> nextRemaining = new HashSet<>(remaining);
-            nextRemaining.remove(node);
-            Node best = minStepsToCollectAllKeys(next, nextRemaining, bestDistance);
-            if(best != null && best.getDistance() < bestDistance) {
-                bestNode = best;
-                bestDistance = best.getDistance();
-            }
-        }
-
-        if(bestNode != null) {
-            Log.i(String.format("No other best distance than %d", bestNode.getDistance()));
-        }
-        return bestNode;
-    }
-
 
     @Override
     public String toString() {
@@ -326,9 +305,9 @@ public class Vault {
             buf.append('\n');
         }
         buf.append("Keys:\n");
-        List<Integer> ids = new ArrayList<>(keys.keySet());
+        List<Character> ids = new ArrayList<>(keys.keySet());
         Collections.sort(ids);
-        for(Integer id : ids) {
+        for(Character id : ids) {
             buf.append(keys.get(id).toFullString()).append('\n');
         }
         buf.append('\n');

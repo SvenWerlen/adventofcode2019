@@ -1,6 +1,6 @@
 package org.boisdechet.adventofcode2019.dijstra;
 
-public class Node {
+public class Node implements Comparable<Node> {
 
     private INodeObject data;
     private Node prev;
@@ -10,6 +10,11 @@ public class Node {
         this.data = data;
         this.prev = null;
         this.distance = Integer.MAX_VALUE;
+    }
+
+    public Node(INodeObject data, int distance) {
+        this(data);
+        this.distance = distance;
     }
 
     public INodeObject getObject() {
@@ -38,6 +43,10 @@ public class Node {
         this.prev = node;
     }
 
+    public String getUniqueId() {
+        return this.data.getUniqueId();
+    }
+
     @Override
     public int hashCode() {
         return this.data.hashCode();
@@ -46,5 +55,10 @@ public class Node {
     @Override
     public String toString() {
         return data.toString();
+    }
+
+    @Override
+    public int compareTo(Node node) {
+        return Integer.compare(distance, node.distance);
     }
 }
