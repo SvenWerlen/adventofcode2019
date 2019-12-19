@@ -74,7 +74,6 @@ public class DijkstraTest {
     };
 
     static class DijkstraController implements DijkstraDynamic.Controller {
-
         private List<INodeObject> list;
         private String targetId;
 
@@ -102,6 +101,11 @@ public class DijkstraTest {
         @Override
         public boolean targetReached(Node target) {
             return target.getUniqueId().equals(targetId);
+        }
+
+        @Override
+        public String getPathUniqueId(Node from, INodeObject to) {
+            return to.getUniqueId();
         }
     };
 

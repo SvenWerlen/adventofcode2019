@@ -7,6 +7,7 @@ import java.util.*;
 
 /**
  * First attempt of vault (too slow!!)
+ * Brute-forcing is not a valid approach for sample 3 and puzzle
  */
 public class VaultTooSlow {
 

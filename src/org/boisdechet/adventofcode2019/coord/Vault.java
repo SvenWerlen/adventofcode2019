@@ -1,10 +1,8 @@
 package org.boisdechet.adventofcode2019.coord;
 
-import jdk.jshell.spi.ExecutionControl;
 import org.boisdechet.adventofcode2019.dijstra.DijkstraDynamic;
 import org.boisdechet.adventofcode2019.dijstra.INodeObject;
 import org.boisdechet.adventofcode2019.dijstra.Node;
-import org.boisdechet.adventofcode2019.utils.Log;
 
 import java.util.*;
 
@@ -19,19 +17,17 @@ public class Vault {
 
     private Point start;
     private int[][] map;
-
     private Map<Character, Key> keys;
 
-    public static class Result {
-        List<Key> path = new ArrayList<>();
-        int distance = 0;
-    }
-
+    /**
+     * POJO class which represents one key
+     * Used for Dijkstra algorithm
+     */
     public static class Key implements INodeObject {
-        Character id;
-        Point position;
-        Map<Character, Integer> distances;
-        Map<Character, Set<Character>> requires;
+        Character id;                               // key identifier
+        Point position;                             // position of the key in maze
+        Map<Character, Integer> distances;          // pre-computed distances
+        Map<Character, Set<Character>> requires;    // pre-computed requirements
 
         public char getId() {
             return id;
@@ -85,6 +81,10 @@ public class Vault {
         }
     }
 
+    /**
+     * Class for dynamic Dijkstra.
+     * Each node represents a key and previous sequences (previous keys)
+     */
     public static class VaultDijkstraController implements DijkstraDynamic.Controller {
 
         private List<Key> keys;
@@ -93,6 +93,9 @@ public class Vault {
             this.keys = keys;
         }
 
+        /**
+         * Connected nodes are only the keys that are reachable considering the available keys (path)
+         */
         @Override
         public List<INodeObject> getConnectedNodes(Node from) {
             // build available keys
@@ -129,6 +132,9 @@ public class Vault {
             return from.getObject().getDistanceTo(to);
         }
 
+        /**
+         * Returns true if all keys have been collected
+         */
         @Override
         public boolean targetReached(Node target) {
             int count = 1;
@@ -138,8 +144,38 @@ public class Vault {
             }
             return count == keys.size();
         }
+
+        /**
+         * Unique Id is based on current key and history
+         * Two paths containing the same keys and ending with the same key must be considered the same
+         * (Without that optimization, algorithm takes hours to execute)
+         */
+        @Override
+        public String getPathUniqueId(Node from, INodeObject to) {
+            if(from == null) {
+                return to.getUniqueId();
+            }
+            PriorityQueue<Character> visited = new PriorityQueue<>();
+            Node curNode = from;
+            while(curNode != null) {
+                visited.add(((Key)curNode.getObject()).getId());
+                curNode = curNode.getPreviousNode();
+            }
+            StringBuffer buf = new StringBuffer(visited.size());
+            while(!visited.isEmpty()) {
+                buf.append(visited.poll());
+            }
+            if(to != null) { buf.append(((Key)to).getId()); }
+            return buf.toString();
+        }
     }
 
+    /**
+     * Vault class used for Day 18
+     * 1) reads the map
+     * 2) pre-computes all distances and pre-requisites
+     * 3) run Dijkstra algorithm to find best path
+     */
     public Vault(String mapAsString) {
         // read input
         String lines[] = mapAsString.split("\n");
@@ -241,37 +277,6 @@ public class Vault {
                 return Integer.MAX_VALUE;
             }
         }
-    }
-
-    private String dumpMinDistMap(int[][] minDist, Set<Integer> keys, Point startPos) {
-        StringBuffer buf = new StringBuffer(minDist.length*minDist[0].length);
-        buf.append("Keys = ");
-        for(int key : keys) { buf.append((char)(key + 'a')).append(' '); }
-        buf.append('\n');
-
-        for(int y=0; y<minDist.length; y++) {
-            for(int x=0; x<minDist[0].length; x++) {
-                if(this.map[y][x] == TYPE_WALL) {
-                    buf.append('#');
-                }
-                else if(startPos.equals(new Point(x,y))) {
-                    buf.append('@');
-                }
-                else if(minDist[y][x] == Integer.MAX_VALUE) {
-                    if(this.map[y][x] >= TYPE_KEY && this.map[y][x] <= TYPE_DOOR + 'z' && !keys.contains(this.map[y][x] - TYPE_KEY)) {
-                        buf.append((char)(this.map[y][x] - TYPE_KEY + 'a'));
-                    } else if(this.map[y][x] >= TYPE_DOOR && this.map[y][x] <= TYPE_DOOR + 'Z' && !keys.contains(this.map[y][x] - TYPE_DOOR)) {
-                        buf.append((char)(this.map[y][x] - TYPE_DOOR + 'A'));
-                    } else {
-                        buf.append(' ');
-                    }
-                } else {
-                    buf.append(minDist[y][x] % 10);
-                }
-            }
-            buf.append('\n');
-        }
-        return buf.toString();
     }
 
     /**

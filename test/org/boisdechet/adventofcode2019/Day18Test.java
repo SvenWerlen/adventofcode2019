@@ -13,14 +13,13 @@ class Day18Test {
 
     @Test
     public void examples() throws Exception {
-        Vault v = new Vault(InputUtil.readSampleAsString(18, 1));
-        Log.i(""+v.toString());
-//        assertEquals(8, new Vault(InputUtil.readSampleAsString(18, 0)).minStepsToCollectAllKeys());
-//        assertEquals(86, new Vault(InputUtil.readSampleAsString(18, 1)).minStepsToCollectAllKeys());
-//        assertEquals(132, new Vault(InputUtil.readSampleAsString(18, 2)).minStepsToCollectAllKeys());
-        //assertEquals(136, new Vault(InputUtil.readSampleAsString(18, 3)).minStepsToCollectAllKeys());
-//        assertEquals(81, new Vault(InputUtil.readSampleAsString(18, 4)).minStepsToCollectAllKeys());
-        new Vault(InputUtil.readInputAsString(18, true)).minStepsToCollectAllKeys();
+        assertEquals(8, new Vault(InputUtil.readSampleAsString(18, 0)).minStepsToCollectAllKeys());
+        assertEquals(86, new Vault(InputUtil.readSampleAsString(18, 1)).minStepsToCollectAllKeys());
+        assertEquals(132, new Vault(InputUtil.readSampleAsString(18, 2)).minStepsToCollectAllKeys());
+        assertEquals(136, new Vault(InputUtil.readSampleAsString(18, 3)).minStepsToCollectAllKeys());
+        assertEquals(81, new Vault(InputUtil.readSampleAsString(18, 4)).minStepsToCollectAllKeys());
+        // solutions (backwards compatibility)
+        assertEquals(4676, Day18.part1());
     }
 
 }

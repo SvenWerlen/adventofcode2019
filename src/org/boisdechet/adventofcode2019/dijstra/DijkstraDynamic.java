@@ -14,6 +14,7 @@ public class DijkstraDynamic {
         List<INodeObject> getConnectedNodes(Node from);
         int getDistance(Node from, INodeObject to);
         boolean targetReached(Node target);
+        String getPathUniqueId(Node from, INodeObject to);
     }
 
     private Controller controller;
@@ -26,27 +27,42 @@ public class DijkstraDynamic {
 
     public Node getShortestPath(INodeObject srcObj) {
         // prepare graph
+        Set<String> history = new HashSet<>();
         queue.add(new Node(srcObj, 0));
         // algorithm
         Node curNode = null;
+        long iter = 1;
         while(queue.size() > 0) {
             curNode = queue.poll();
+            String uniqueId = controller.getPathUniqueId(curNode.getPreviousNode(), curNode.getObject());
+            if(Log.DEBUG) { Log.d(String.format("Current node is %s with distance %d", curNode, curNode.getDistance())); }
             if(controller.targetReached(curNode)) {
                 return curNode;
             }
-            Log.i("" + curNode.getDistance());
-            Log.d(String.format("Current node is %s with distance %d", curNode, curNode.getDistance()));
+            else if(history.contains(uniqueId)) {
+                continue;
+            }
+            history.add(uniqueId);
+            if(history.size() != iter) {
+                throw new IllegalStateException("Something wrong! History size should always match iteration!");
+            }
             // retrieve all nodes "connected"
             List<INodeObject> list = controller.getConnectedNodes(curNode);
             // compute distances for nodes "around"
             for(INodeObject o : list) {
+                String pathUniqueID = controller.getPathUniqueId(curNode, o);
+                if(history.contains(pathUniqueID)) {
+                    if(Log.DEBUG) { Log.d(String.format("Path %s already in history", pathUniqueID)); }
+                    continue;
+                }
                 int dist = controller.getDistance(curNode, o);
-                Log.d(String.format("Path exists between %s and %s (dist = %d)", curNode, o, dist));
+                if(Log.DEBUG) { Log.d(String.format("Path exists between %s and %s (dist = %d)", curNode, o, dist)); }
                 Node target = new Node(o);
                 target.setPreviousNode(curNode);
                 target.setDistance(curNode.getDistance() + dist);
                 queue.add(target);
             }
+            iter++;
         }
         return curNode;
     }
