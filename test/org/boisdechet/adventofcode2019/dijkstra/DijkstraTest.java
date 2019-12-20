@@ -1,9 +1,6 @@
 package org.boisdechet.adventofcode2019.dijkstra;
 
-import org.boisdechet.adventofcode2019.dijstra.Dijkstra;
-import org.boisdechet.adventofcode2019.dijstra.DijkstraDynamic;
-import org.boisdechet.adventofcode2019.dijstra.INodeObject;
-import org.boisdechet.adventofcode2019.dijstra.Node;
+import org.boisdechet.adventofcode2019.dijstra.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,61 +14,6 @@ import java.util.Map;
  * Test based on example: https://www.baeldung.com/java-dijkstra
  */
 public class DijkstraTest {
-
-    static class Point implements INodeObject {
-
-        private String name;
-        private Map<Point, Integer> connections;
-
-        private Point(String name) {
-            this.name = name;
-            this.connections = new HashMap<>();
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public synchronized void addConnection(Point point, int length) {
-            if(!connections.containsKey(point)) {
-                connections.put(point, length);
-                point.addConnection(this, length);
-            }
-        }
-
-        @Override
-        public String getUniqueId() {
-            return name;
-        }
-
-        @Override
-        public boolean pathExists(INodeObject obj) {
-            return connections.containsKey(obj);
-        }
-
-        @Override
-        public int getDistanceTo(INodeObject obj) {
-            if(!connections.containsKey(obj)) {
-                throw new IllegalArgumentException(String.format("No path exists between %s and %s", this.name, obj.toString()));
-            }
-            return connections.get((Point)obj);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return obj instanceof Point && ((Point)obj).name.equals(this.name);
-        }
-
-        @Override
-        public int hashCode() {
-            return name.hashCode();
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
-    };
 
     static class DijkstraController implements DijkstraDynamic.Controller {
         private List<INodeObject> list;
@@ -112,12 +54,12 @@ public class DijkstraTest {
     @Test
     public void simple() throws Exception {
         List<INodeObject> list = new ArrayList<>();
-        Point pointA = new Point("A"); list.add(pointA);
-        Point pointB = new Point("B"); list.add(pointB);
-        Point pointC = new Point("C"); list.add(pointC);
-        Point pointD = new Point("D"); list.add(pointD);
-        Point pointE = new Point("E"); list.add(pointE);
-        Point pointF = new Point("F"); list.add(pointF);
+        DijkstraPoint pointA = new DijkstraPoint("A"); list.add(pointA);
+        DijkstraPoint pointB = new DijkstraPoint("B"); list.add(pointB);
+        DijkstraPoint pointC = new DijkstraPoint("C"); list.add(pointC);
+        DijkstraPoint pointD = new DijkstraPoint("D"); list.add(pointD);
+        DijkstraPoint pointE = new DijkstraPoint("E"); list.add(pointE);
+        DijkstraPoint pointF = new DijkstraPoint("F"); list.add(pointF);
         pointA.addConnection(pointB, 10);
         pointA.addConnection(pointC, 15);
         pointB.addConnection(pointD, 12);
@@ -140,12 +82,12 @@ public class DijkstraTest {
     @Test
     public void dynamic() throws Exception {
         List<INodeObject> list = new ArrayList<>();
-        Point pointA = new Point("A"); list.add(pointA);
-        Point pointB = new Point("B"); list.add(pointB);
-        Point pointC = new Point("C"); list.add(pointC);
-        Point pointD = new Point("D"); list.add(pointD);
-        Point pointE = new Point("E"); list.add(pointE);
-        Point pointF = new Point("F"); list.add(pointF);
+        DijkstraPoint pointA = new DijkstraPoint("A"); list.add(pointA);
+        DijkstraPoint pointB = new DijkstraPoint("B"); list.add(pointB);
+        DijkstraPoint pointC = new DijkstraPoint("C"); list.add(pointC);
+        DijkstraPoint pointD = new DijkstraPoint("D"); list.add(pointD);
+        DijkstraPoint pointE = new DijkstraPoint("E"); list.add(pointE);
+        DijkstraPoint pointF = new DijkstraPoint("F"); list.add(pointF);
         pointA.addConnection(pointB, 10);
         pointA.addConnection(pointC, 15);
         pointB.addConnection(pointD, 12);

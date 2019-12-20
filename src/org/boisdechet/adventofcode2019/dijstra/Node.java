@@ -47,9 +47,18 @@ public class Node implements Comparable<Node> {
         return this.data.getUniqueId();
     }
 
+    public String getFullPath() {
+        StringBuffer buf = new StringBuffer(toString());
+        Node cur = this;
+        while((cur = cur.getPreviousNode()) != null) {
+            buf.append(cur.toString());
+        }
+        return buf.reverse().toString();
+    }
+
     @Override
     public int hashCode() {
-        return this.data.hashCode();
+        return this.data.getUniqueId().hashCode();
     }
 
     @Override

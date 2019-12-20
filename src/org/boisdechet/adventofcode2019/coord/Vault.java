@@ -12,163 +12,18 @@ public class Vault {
     public static final int TYPE_START = 0;
     public static final int TYPE_EMPTY = 1;
     public static final int TYPE_WALL  = 2;
+    public static final int TYPE_START_2 = 3;
+    public static final int TYPE_START_3 = 4;
+    public static final int TYPE_START_4 = 5;
     public static final int TYPE_DOOR  = 100;
     public static final int TYPE_KEY   = 200;
 
     private Point start;
+    private Point start2;
+    private Point start3;
+    private Point start4;
     private int[][] map;
-    private Map<Character, Key> keys;
-
-    /**
-     * POJO class which represents one key
-     * Used for Dijkstra algorithm
-     */
-    public static class Key implements INodeObject {
-        Character id;                               // key identifier
-        Point position;                             // position of the key in maze
-        Map<Character, Integer> distances;          // pre-computed distances
-        Map<Character, Set<Character>> requires;    // pre-computed requirements
-
-        public char getId() {
-            return id;
-        }
-
-        public Key(Character id, Point position) {
-            this.id = id;
-            this.position = position;
-            this.distances = new HashMap<>();
-            this.requires = new HashMap<>();
-        }
-
-        @Override
-        public String getUniqueId() {
-            return "" + id;
-        }
-
-        @Override
-        public boolean pathExists(INodeObject obj) {
-            throw new IllegalStateException("Not implemented! Don't use simple Dijkstra with Keys");
-        }
-
-        @Override
-        public int getDistanceTo(INodeObject obj) {
-            return distances.get(((Key)obj).id);
-        }
-
-        @Override
-        public String toString() {
-            return getUniqueId();
-        }
-
-        public String toFullString() {
-            StringBuffer buf = new StringBuffer();
-            List<Character> ids = new ArrayList<>(distances.keySet());
-            Collections.sort(ids);
-            for(Character id : ids) {
-                buf.append(id).append('(');
-                buf.append(distances.getOrDefault(id, 0));
-                buf.append(":").append(dumpKeys(requires.getOrDefault(id, new HashSet<>()))).append("), ");
-            }
-            return String.format("%s %s with distances to %s", id, position.toString(), buf.toString());
-        }
-
-        public static String dumpKeys(Set<Character> keys) {
-            StringBuffer buf = new StringBuffer();
-            for(Character k : keys) {
-                buf.append(k);
-            }
-            return buf.toString();
-        }
-    }
-
-    /**
-     * Class for dynamic Dijkstra.
-     * Each node represents a key and previous sequences (previous keys)
-     */
-    public static class VaultDijkstraController implements DijkstraDynamic.Controller {
-
-        private List<Key> keys;
-
-        private VaultDijkstraController(List<Key> keys) {
-            this.keys = keys;
-        }
-
-        /**
-         * Connected nodes are only the keys that are reachable considering the available keys (path)
-         */
-        @Override
-        public List<INodeObject> getConnectedNodes(Node from) {
-            // build available keys
-            Map<Character, Key> hasKeys = new HashMap<>();
-            Node cur = from;
-            while(cur != null) {
-                Key k = (Key)cur.getObject();
-                hasKeys.put(k.getId(), k);
-                cur = cur.getPreviousNode();
-            }
-
-            // build connected nodes
-            List<INodeObject> result = new ArrayList<>();
-            Key curKey = (Key)from.getObject();
-            for(Key k : keys) {
-                if(!hasKeys.containsKey(k.getId())) {
-                    // check dependencies
-                    boolean depOK = true;
-                    for(Character dep : curKey.requires.getOrDefault(k.id, new HashSet<>())) {
-                        if(!hasKeys.containsKey(dep)) {
-                            depOK = false; break;
-                        }
-                    }
-                    if(depOK) {
-                        result.add(k);
-                    }
-                }
-            }
-            return result;
-        }
-
-        @Override
-        public int getDistance(Node from, INodeObject to) {
-            return from.getObject().getDistanceTo(to);
-        }
-
-        /**
-         * Returns true if all keys have been collected
-         */
-        @Override
-        public boolean targetReached(Node target) {
-            int count = 1;
-            Node curNode = target;
-            while((curNode = curNode.getPreviousNode()) != null) {
-                count++;
-            }
-            return count == keys.size();
-        }
-
-        /**
-         * Unique Id is based on current key and history
-         * Two paths containing the same keys and ending with the same key must be considered the same
-         * (Without that optimization, algorithm takes hours to execute)
-         */
-        @Override
-        public String getPathUniqueId(Node from, INodeObject to) {
-            if(from == null) {
-                return to.getUniqueId();
-            }
-            PriorityQueue<Character> visited = new PriorityQueue<>();
-            Node curNode = from;
-            while(curNode != null) {
-                visited.add(((Key)curNode.getObject()).getId());
-                curNode = curNode.getPreviousNode();
-            }
-            StringBuffer buf = new StringBuffer(visited.size());
-            while(!visited.isEmpty()) {
-                buf.append(visited.poll());
-            }
-            if(to != null) { buf.append(((Key)to).getId()); }
-            return buf.toString();
-        }
-    }
+    private Map<Character, VaultKey> keys;
 
     /**
      * Vault class used for Day 18
@@ -177,6 +32,10 @@ public class Vault {
      * 3) run Dijkstra algorithm to find best path
      */
     public Vault(String mapAsString) {
+        this(mapAsString, false);
+    }
+
+    public Vault(String mapAsString, boolean multivault) {
         // read input
         String lines[] = mapAsString.split("\n");
         map = new int[lines.length][lines[0].length()];
@@ -193,7 +52,7 @@ public class Vault {
                         if(c >= 'A' && c <= 'Z') {
                             map[y][x] = TYPE_DOOR + (c-'A');
                         } else if(c >= 'a' && c <= 'z') {
-                            keys.put(c, new Key(c, new Point(x,y)));
+                            keys.put(c, new VaultKey(c, new Point(x,y)));
                             map[y][x] = TYPE_KEY + (c-'a');
                         } else {
                             throw new IllegalStateException(String.format("Illegal map character %s", c));
@@ -203,17 +62,33 @@ public class Vault {
             }
             y++;
         }
+        if(multivault) {
+            map[start.y-1][start.x-1]=TYPE_START;
+            map[start.y-1][start.x]=TYPE_WALL;
+            map[start.y-1][start.x+1]=TYPE_START_2;
+            map[start.y][start.x-1]=TYPE_WALL;
+            map[start.y][start.x]=TYPE_WALL;
+            map[start.y][start.x+1]=TYPE_WALL;
+            map[start.y+1][start.x-1]=TYPE_START_3;
+            map[start.y+1][start.x]=TYPE_WALL;
+            map[start.y+1][start.x+1]=TYPE_START_4;
+            start2 = new Point(start.x+1, start.y-1);
+            start3 = new Point(start.x-1, start.y+1);
+            start4 = new Point(start.x+1, start.y+1);
+            start = new Point(start.x-1, start.y-1);
+            keys.put('*', new VaultKey('*', start2));
+            keys.put('$', new VaultKey('$', start3));
+            keys.put('^', new VaultKey('^', start4));
+        }
+        keys.put('@', new VaultKey('@', start));
         // computes all distances from a key to another (and from source)
-        for(Key k : keys.values()) {
+        for(VaultKey k : keys.values()) {
             fillDistances(k);
         }
-        Key source = new Key('@', start);
-        fillDistances(source);
-        keys.put(source.id, source);
     }
 
-    private void fillDistances(Key curkey) {
-        for(Key k : keys.values()) {
+    private void fillDistances(VaultKey curkey) {
+        for(VaultKey k : keys.values()) {
             if(k.id == curkey.id || k.distances.containsKey(curkey.id)) {
                 continue;
             }
@@ -241,6 +116,9 @@ public class Vault {
         else { throw new IllegalStateException(String.format("Path couldn't be found for dist %d!", dist)); }
     }
 
+    /**
+     * Pre-computes distances and determines dependencies between 2 positions
+     */
     private int getDistance(Point src, Point dest, Set<Character> deps) {
         int[][] minDist = new int[map.length][map[0].length];
         for(int y = 0; y < map.length; y++) { Arrays.fill(minDist[y], Integer.MAX_VALUE); }
@@ -283,9 +161,19 @@ public class Vault {
      * Dijkstra
      */
     public int minStepsToCollectAllKeys() {
-        DijkstraDynamic.Controller controller = new Vault.VaultDijkstraController(new ArrayList<>(keys.values()));
-        Node end = new DijkstraDynamic(controller).getShortestPath(keys.get('@'));
-        return end.getDistance();
+        return minStepsToCollectAllKeys(true);
+    }
+
+    public int minStepsToCollectAllKeys(boolean speedup) {
+        if(start2 == null) {
+            DijkstraDynamic.Controller controller = new VaultDijkstraController(new ArrayList<>(keys.values()));
+            Node end = new DijkstraDynamic(controller).getShortestPath(keys.get('@'));
+            return end.getDistance();
+        } else {
+            DijkstraDynamic.Controller controller = new VaultDijkstraMultiController(new ArrayList<>(keys.values()), speedup);
+            Node end = new DijkstraDynamic(controller).getShortestPath(new VaultMultiKey(keys.get('@'), keys.get('*'), keys.get('$'), keys.get('^'), null));
+            return end.getDistance();
+        }
     }
 
     @Override
@@ -294,7 +182,11 @@ public class Vault {
         for(int y=0; y<map.length; y++) {
             for(int x=0; x<map[0].length; x++) {
                 switch(map[y][x]) {
-                    case TYPE_START: buf.append('@'); break;
+                    case TYPE_START:
+                    case TYPE_START_2:
+                    case TYPE_START_3:
+                    case TYPE_START_4:
+                        buf.append('@'); break;
                     case TYPE_WALL: buf.append('#'); break;
                     case TYPE_EMPTY: buf.append('.'); break;
                     default:

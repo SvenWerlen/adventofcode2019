@@ -24,13 +24,14 @@ public class Day18 {
      * Part 2
      */
     public static long part2() throws IOException {
-        return -1;
+        return new Vault(InputUtil.readInputAsString(18, true), true).minStepsToCollectAllKeys();
     }
 
     public static void main(String[] args) {
         Log.welcome();
         try {
-            Log.i(String.format("Steps for the shortest path that collects all of the keys ?: %d", part1()));
+            Log.i(String.format("Steps for the shortest path that collects all of the keys: %d", part1()));
+            Log.i(String.format("Fewest steps necessary to collect all of the keys: %d", part2()));
         } catch(Exception exc) {
             Log.w(String.format("Error during execution: %s", exc.getMessage()));
             exc.printStackTrace();
