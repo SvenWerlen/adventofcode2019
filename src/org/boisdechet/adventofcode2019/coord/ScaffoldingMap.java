@@ -91,7 +91,7 @@ public class ScaffoldingMap {
     }
 
     private List<Point> followPath(Point start, Map<Point, Integer> map, int direction) {
-        Log.d(String.format("Following path from %s in direction %s", start, DIRECTION_NAMES[direction]));
+        if(Log.DEBUG) { Log.d(String.format("Following path from %s in direction %s", start, DIRECTION_NAMES[direction])); }
         List<Point> path = new ArrayList<>();
         while(true) {
             // find next position
@@ -144,10 +144,10 @@ public class ScaffoldingMap {
                 break;
             }
         }
-        Log.d(String.format("Starting point is %s", start));
+        if(Log.DEBUG) { Log.d(String.format("Starting point is %s", start)); }
         List<Point> path = followPath(start, map, DIRECTION_NORTH);
-        Log.d(String.format("End point is %s", path.get(path.size()-1)));
-        Log.d(dumpGrid(map));
+        if(Log.DEBUG) { Log.d(String.format("End point is %s", path.get(path.size()-1))); }
+        if(Log.DEBUG) { Log.d(dumpGrid(map)); }
         return path;
     }
 

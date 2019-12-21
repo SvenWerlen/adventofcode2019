@@ -33,7 +33,7 @@ public class Ship {
     }
 
     private boolean tryMove(Robot rb, Point dest, int curDistance, int direction) {
-        Log.d(String.format("Next move %s for distance %d", dest, curDistance));
+        if(Log.DEBUG) { Log.d(String.format("Next move %s for distance %d", dest, curDistance)); }
         // wall => don't even try
         if(map.containsKey(dest) && map.get(dest).distance < 0) {
             return false;
@@ -47,7 +47,7 @@ public class Ship {
         boolean debugEnabled = Log.DEBUG; Log.DEBUG = false;
         long status = r.move(direction);
         Log.DEBUG = debugEnabled;
-        Log.d(String.format("Move status is %s", status == Robot.STATUS_GOAL ? "GOAL" : status == Robot.STATUS_MOVE ? "MOVE" : "WALL"));
+        if(Log.DEBUG) { Log.d(String.format("Move status is %s", status == Robot.STATUS_GOAL ? "GOAL" : status == Robot.STATUS_MOVE ? "MOVE" : "WALL")); }
         // oxygen found!
         if(status == Robot.STATUS_GOAL) {
             map.put(dest, new RobotDistance(r, dest, Integer.MAX_VALUE));
@@ -81,7 +81,7 @@ public class Ship {
                     || tryMove(rb.robot, new Point(rb.position.x +1, rb.position.y), curDistance, Robot.MOVE_EAST)
                     || tryMove(rb.robot, new Point(rb.position.x -1, rb.position.y), curDistance, Robot.MOVE_WEST)
                 ) {
-                    Log.d(toString());
+                    if(Log.DEBUG) { Log.d(toString()); }
                     return curDistance+1;
                 }
             }
@@ -100,7 +100,7 @@ public class Ship {
                 }
             }
             if(list.size() == 0) {
-                Log.d(toString());
+                if(Log.DEBUG) { Log.d(toString()); }
                 return computeFillOxygenDelay();
             }
             // identify all directions for which distance would be less than existing found path
@@ -141,7 +141,7 @@ public class Ship {
         // iterate on map from oxygen
         int curDistance = 0;
         while(true) {
-            Log.d("Current distance = " + curDistance);
+            if(Log.DEBUG) { Log.d("Current distance = " + curDistance); }
             boolean changed = false;
             for(int y=0; y<grid[0].length; y++) {
                 for(int x=0; x<grid.length; x++) {
@@ -157,7 +157,7 @@ public class Ship {
             if(!changed) {
                 return curDistance-1;
             }
-            Log.d(dumpMap(grid));
+            if(Log.DEBUG) { Log.d(dumpMap(grid)); }
 
             curDistance++;
         }

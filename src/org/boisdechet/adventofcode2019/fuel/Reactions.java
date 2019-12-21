@@ -64,7 +64,7 @@ public class Reactions {
     }
 
     public long getRequiredOre(Reaction.Chemical chemical, Map<String, Reaction.Chemical> stock) {
-        Log.d(String.format("Looking for %d %s", chemical.count, chemical.key));
+        if(Log.DEBUG) { Log.d(String.format("Looking for %d %s", chemical.count, chemical.key)); }
         if(chemical.key.equals(Reactions.TYPE_ORE)) {
             return chemical.count;
         }
@@ -79,19 +79,19 @@ public class Reactions {
         }
         // compute how many times input is required
         long mult = (long)Math.ceil((double)required / reaction.getOutput().count);
-        Log.d(String.format("Chemical multiplier for %s is %d, considering %d is required and reaction provides %d", chemical.key, mult, required, reaction.getOutput().count));
+        if(Log.DEBUG) { Log.d(String.format("Chemical multiplier for %s is %d, considering %d is required and reaction provides %d", chemical.key, mult, required, reaction.getOutput().count)); }
         // recursion on each chemical required (input)
         long total = 0;
         for(Reaction.Chemical c : reaction.getInput()) {
             Reaction.Chemical reqC = new Reaction.Chemical(c.key, c.count * mult);
-            Log.d(String.format("%d %s requires %d %s", chemical.count, chemical.key, reqC.count, reqC.key));
+            if(Log.DEBUG) { Log.d(String.format("%d %s requires %d %s", chemical.count, chemical.key, reqC.count, reqC.key));}
             total += getRequiredOre(reqC, stock);
         }
         // update remaining stock
         long remaining = mult * reaction.getOutput().count - required;
         if(remaining > 0) {
             addToStock(stock, new Reaction.Chemical(chemical.key, Math.toIntExact(remaining)));
-            Log.d(String.format("Remaining %d %s added to stock!", remaining, chemical.key));
+            if(Log.DEBUG) { Log.d(String.format("Remaining %d %s added to stock!", remaining, chemical.key));}
         } else if(remaining < 0) {
             throw new IllegalStateException(String.format("Invalid remaining value (%d)", remaining));
         }
@@ -113,7 +113,7 @@ public class Reactions {
         }
         long current = (long)Math.ceil(((double)min+max)/2);
         long oreForFuel = getRequiredOre(new Reaction.Chemical(Reactions.TYPE_FUEL, current), new HashMap<String, Reaction.Chemical>());
-        Log.d(String.format("%d ORE required for %d FUEL (%d,%d,%d)", oreForFuel, current, min, current, max));
+        if(Log.DEBUG) { Log.d(String.format("%d ORE required for %d FUEL (%d,%d,%d)", oreForFuel, current, min, current, max));}
         if(oreForFuel < 0) {
             throw new IllegalStateException(String.format("Required ORE cannot be negative! (%d)", current));
         }
@@ -130,12 +130,12 @@ public class Reactions {
         long fuel = getMaxFuelForOre(amount, 0, 2*max);
         Map<String, Reaction.Chemical> stock = new HashMap<>();
         oreForFuel = getRequiredOre(new Reaction.Chemical(Reactions.TYPE_FUEL, fuel), stock);
-        Log.d(String.format("Total ORE required: %d / %d (FUEL: %d)", oreForFuel, amount, fuel));
+        if(Log.DEBUG) { Log.d(String.format("Total ORE required: %d / %d (FUEL: %d)", oreForFuel, amount, fuel));}
         // compute the rest
         long remaining = amount - oreForFuel;
         while(true) {
             long required = getRequiredOre(new Reaction.Chemical(Reactions.TYPE_FUEL, 1), stock);
-            Log.d(String.format("ORE required: %d / %d", required, remaining));
+            if(Log.DEBUG) { Log.d(String.format("ORE required: %d / %d", required, remaining));}
             if(required > remaining) {
                 return fuel;
             }

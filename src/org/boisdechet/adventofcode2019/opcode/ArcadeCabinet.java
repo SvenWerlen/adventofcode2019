@@ -105,11 +105,11 @@ public class ArcadeCabinet {
                 curScore = out.getScore();
             }
             else if(out.tileType == Output.TILE_BALL) {
-                Log.d(String.format("Ball at position %s (%d)", out.coord, loop));
+                if(Log.DEBUG) { Log.d(String.format("Ball at position %s (%d)", out.coord, loop));}
                 ballX = out.coord.x;
             }
             else if(out.tileType == Output.TILE_HPADDLE) {
-                Log.d(String.format("Paddle at position %s (%d)", out.coord, loop));
+                if(Log.DEBUG) { Log.d(String.format("Paddle at position %s (%d)", out.coord, loop));}
                 paddX = out.coord.x;
             }
             loop++;
@@ -125,7 +125,7 @@ public class ArcadeCabinet {
         for(Output out : outputs) {
             if(!out.isValid()) {
                 if(out.isScore()) {
-                    Log.d(String.format("Current score is: %d", out.getScore()));
+                    if(Log.DEBUG) { Log.d(String.format("Current score is: %d", out.getScore()));}
                 } else {
                     throw new IllegalStateException(String.format("Invalid output: %s", out.toString()));
                 }

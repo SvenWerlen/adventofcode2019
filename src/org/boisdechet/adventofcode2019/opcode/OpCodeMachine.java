@@ -81,7 +81,7 @@ public class OpCodeMachine implements Cloneable {
             instr[pos] = value;
         } else {
             outMemory.put(pos, value);
-            Log.d(String.format("OutMemory [%d] set to %d", pos, value));
+            if(Log.DEBUG) { Log.d(String.format("OutMemory [%d] set to %d", pos, value)); }
         }
     }
 
@@ -107,13 +107,13 @@ public class OpCodeMachine implements Cloneable {
     public long execute(int parameter) {
         long result = 0;
         while(true) {
-            Log.d(instr);
+            if(Log.DEBUG) { Log.d(instr);}
 
             // get OpCode
             long opcodeInt = instr[curInstr];
             OpCode opcode = new OpCode(opcodeInt);
-            Log.d("");
-            Log.d(String.format("Opcode is: %s (%d)", opcode.toString(), opcodeInt));
+            if(Log.DEBUG) { Log.d(""); }
+            if(Log.DEBUG) { Log.d(String.format("Opcode is: %s (%d)", opcode.toString(), opcodeInt)); }
             check(opcode.isValid(),String.format("Invalid opcode: %d", opcodeInt));
 
             // execute
@@ -123,7 +123,7 @@ public class OpCodeMachine implements Cloneable {
                     long val1 = getValue(instr[curInstr+1], opcode.getParam1Mode());
                     long val2 = getValue(instr[curInstr+2], opcode.getParam2Mode());
                     int dest =  Math.toIntExact(instr[curInstr+3]);
-                    Log.d(String.format("Add: %d + %d => [%d]", val1, val2, dest));
+                    if(Log.DEBUG) { Log.d(String.format("Add: %d + %d => [%d]", val1, val2, dest)); }
                     setValue(dest, val1 + val2, opcode.getParam3Mode());
                     curInstr += 4;
                     break;
@@ -132,7 +132,7 @@ public class OpCodeMachine implements Cloneable {
                     val1 = getValue(instr[curInstr+1], opcode.getParam1Mode());
                     val2 = getValue(instr[curInstr+2], opcode.getParam2Mode());
                     dest =  Math.toIntExact(instr[curInstr+3]);
-                    Log.d(String.format("Mult: %d * %d => [%d]", val1, val2, dest));
+                    if(Log.DEBUG) { Log.d(String.format("Mult: %d * %d => [%d]", val1, val2, dest)); }
                     setValue(dest, val1 * val2, opcode.getParam3Mode());
                     curInstr += 4;
                     break;
@@ -144,14 +144,14 @@ public class OpCodeMachine implements Cloneable {
                         param = this.paramInit[paramInitIdx];
                         paramInitIdx++;
                     }
-                    Log.d(String.format("Input required! Giving %s (%d)", param == '\n' ? "\\n" : (char)param, param));
+                    if(Log.DEBUG) { Log.d(String.format("Input required! Giving %s (%d)", param == '\n' ? "\\n" : (char)param, param)); }
                     setValue(dest, param, opcode.getParam1Mode());
-                    Log.d(String.format("In: [%d] = %d", dest, param));
+                    if(Log.DEBUG) { Log.d(String.format("In: [%d] = %d", dest, param)); }
                     curInstr += 2;
                     break;
                 case OpCode.OP_OUT: // 4
                     val1 = getValue(instr[curInstr+1], opcode.getParam1Mode());
-                    Log.d(String.format("[Out] %d (index %d)", val1, curInstr));
+                    if(Log.DEBUG) { Log.d(String.format("[Out] %d (index %d)", val1, curInstr)); }
                     result = val1;
                     curInstr += 2;
                     return result; // 5
@@ -159,10 +159,10 @@ public class OpCodeMachine implements Cloneable {
                     val1 = getValue(instr[curInstr+1], opcode.getParam1Mode());
                     val2 = getValue(instr[curInstr+2], opcode.getParam2Mode());
                     if(val1 != 0) {
-                        Log.d(String.format("%d == 1 ? YES. Jumping to %d", val1, val2));
+                        if(Log.DEBUG) { Log.d(String.format("%d == 1 ? YES. Jumping to %d", val1, val2)); }
                         curInstr = Math.toIntExact(val2);
                     } else {
-                        Log.d(String.format("%d == 1 ? NO. Continuing.", val1, val2));
+                        if(Log.DEBUG) { Log.d(String.format("%d == 1 ? NO. Continuing.", val1, val2)); }
                         curInstr += 3;
                     }
                     break;
@@ -170,10 +170,10 @@ public class OpCodeMachine implements Cloneable {
                     val1 = getValue(instr[curInstr+1], opcode.getParam1Mode());
                     val2 = getValue(instr[curInstr+2], opcode.getParam2Mode());
                     if(val1 == 0) {
-                        Log.d(String.format("%d == 0 ? YES. Jumping to %d", val1, val2));
+                        if(Log.DEBUG) { Log.d(String.format("%d == 0 ? YES. Jumping to %d", val1, val2)); }
                         curInstr = Math.toIntExact(val2);
                     } else {
-                        Log.d(String.format("%d == 0 ? NO. Continuing.", val1, val2));
+                        if(Log.DEBUG) { Log.d(String.format("%d == 0 ? NO. Continuing.", val1, val2)); }
                         curInstr += 3;
                     }
                     break;
@@ -182,7 +182,7 @@ public class OpCodeMachine implements Cloneable {
                     val1 = getValue(instr[curInstr+1], opcode.getParam1Mode());
                     val2 = getValue(instr[curInstr+2], opcode.getParam2Mode());
                     dest = Math.toIntExact(instr[curInstr+3]);
-                    Log.d(String.format("%d < %d ? [%d]=%d", val1, val2, dest, val1 < val2 ? 1 : 0));
+                    if(Log.DEBUG) { Log.d(String.format("%d < %d ? [%d]=%d", val1, val2, dest, val1 < val2 ? 1 : 0)); }
                     setValue(dest, val1 < val2 ? 1 : 0, opcode.getParam3Mode());
                     curInstr += 4;
                     break;
@@ -191,14 +191,14 @@ public class OpCodeMachine implements Cloneable {
                     val1 = getValue(instr[curInstr+1], opcode.getParam1Mode());
                     val2 = getValue(instr[curInstr+2], opcode.getParam2Mode());
                     dest = Math.toIntExact(instr[curInstr+3]);
-                    Log.d(String.format("%d == %d ? [%d]=%d", val1, val2, dest, val1 == val2 ? 1 : 0));
+                    if(Log.DEBUG) { Log.d(String.format("%d == %d ? [%d]=%d", val1, val2, dest, val1 == val2 ? 1 : 0)); }
                     setValue(dest, val1 == val2 ? 1 : 0, opcode.getParam3Mode());
                     curInstr += 4;
                     break;
                 case OpCode.OP_RELBASE: // 9
                     val1 = getValue(instr[curInstr+1], opcode.getParam1Mode());
                     relBase += val1;
-                    Log.d(String.format("RelBase increased by %d (now %d)", val1, relBase));
+                    if(Log.DEBUG) { Log.d(String.format("RelBase increased by %d (now %d)", val1, relBase)); }
                     curInstr += 2;
                     break;
                 case OpCode.OP_HALT:

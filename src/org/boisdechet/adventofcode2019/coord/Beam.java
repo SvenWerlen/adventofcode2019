@@ -93,10 +93,10 @@ public class Beam {
             x = stepsHorizontal(x, y, 1, false)+1;
             status = checkPositionFromBottomLeft(x, y, squareSize);
         }
-        Log.d(String.format("Perfect bottom left corner is %s", lastPos));
+        if(Log.DEBUG) { Log.d(String.format("Perfect bottom left corner is %s", lastPos)); }
         lastPos.y -= squareSize-1;
         int lastX = stepsHorizontal(lastPos.x, lastPos.y, 1, true);
-        Log.d(String.format("Size is %d", lastX - lastPos.x + 1));
+        if(Log.DEBUG) { Log.d(String.format("Size is %d", lastX - lastPos.x + 1)); }
         return lastPos;
     }
 

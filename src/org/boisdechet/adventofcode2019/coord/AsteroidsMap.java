@@ -35,7 +35,7 @@ public class AsteroidsMap {
 
     public boolean hasLineOfSightSlow(Point from, Point to) {
         for(Point p : points) {
-            //Log.d(String.format("Is %s between %s and %s?", p, from, to));
+            if(Log.DEBUG) { Log.d(String.format("Is %s between %s and %s?", p, from, to)); }
             // ignore from/to
             if(p.equals(from) || p.equals(to)) {
                 continue;
@@ -46,7 +46,7 @@ public class AsteroidsMap {
                 // check if "direction" is the same
                 double dir1 = Math.atan2(from.y-to.y, from.x-to.x);
                 double dir2 = Math.atan2(from.y-p.y, from.x-p.x);
-                Log.d(String.format("Direction difference is %f", (dir1-dir2)));
+                if(Log.DEBUG) { Log.d(String.format("Direction difference is %f", (dir1-dir2))); }
                 if(Math.abs(dir1-dir2) < ROUNDING) {
                     return false;
                 }
@@ -127,11 +127,11 @@ public class AsteroidsMap {
                     continue;
                 }
                 if(hasLineOfSight(from, to, pList)) {
-                    //Log.d(String.format("%s can see %s", from, to));
+                    //if(Log.DEBUG) { Log.d(String.format("%s can see %s", from, to)); }
                     lineofsight.get(from).add(to);
                     lineofsight.get(to).add(from);
                 } else {
-                    //Log.d(String.format("%s CANNOT see %s", from, to));
+                    //if(Log.DEBUG) { Log.d(String.format("%s CANNOT see %s", from, to)); }
                     noLineofsight.get(from).add(to);
                     noLineofsight.get(to).add(from);
                 }

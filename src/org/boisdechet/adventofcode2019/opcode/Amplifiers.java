@@ -33,13 +33,13 @@ public class Amplifiers {
         for(int idx=0; idx<sequence.length; idx++) {
             amplifiers[idx] = new OpCodeMachine(instructions, sequence[idx]);
         }
-        Log.d(String.format("Sequence: %s", InputUtil.convertToString(sequence)));
+        if(Log.DEBUG) { Log.d(String.format("Sequence: %s", InputUtil.convertToString(sequence))); }
         while(true) {
             for (int idx=0; idx<sequence.length; idx++) {
                 output = amplifiers[idx].execute(Math.toIntExact(output));
-                Log.d(String.format("Output (amp #%d) = %d", idx, output));
+                if(Log.DEBUG) { Log.d(String.format("Output (amp #%d) = %d", idx, output)); }
             }
-            Log.d(String.format("Output (loop %d) = %d", count, output));
+            if(Log.DEBUG) { Log.d(String.format("Output (loop %d) = %d", count, output)); }
             if(!loop) {
                 break;
             }
@@ -68,7 +68,7 @@ public class Amplifiers {
                     .toArray();
             Amplifiers amp = new Amplifiers(array, instructions, feedbackLoop);
             long output = amp.getThrustersOutput();
-            Log.d(String.format("Output (%s): %d", Arrays.toString(array), output));
+            if(Log.DEBUG) { Log.d(String.format("Output (%s): %d", Arrays.toString(array), output)); }
             if (permMax == null || outputMax < output) {
                 permMax = array;
                 outputMax = output;

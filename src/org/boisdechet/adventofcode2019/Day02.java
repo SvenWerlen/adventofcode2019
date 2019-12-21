@@ -17,13 +17,13 @@ public class Day02 {
     protected static int executeIntCode(int[] instructions) {
         int curIdx = 0;
         while(true) {
-            Log.d(instructions);
+            if(Log.DEBUG) { Log.d(instructions); }
             // check for errors
             if(curIdx < 0 || curIdx+3 >= instructions.length) {
                 throw new IllegalStateException(String.format("Trying to access index %d of %d instructions!", curIdx, instructions.length));
             }
             int opcode = instructions[curIdx];
-            Log.d(String.format("Opcode is: %d", opcode));
+            if(Log.DEBUG) { Log.d(String.format("Opcode is: %d", opcode)); }
             if(opcode == 99) {
                 return instructions[0];
             }
@@ -70,7 +70,7 @@ public class Day02 {
                 intCode[2] = verb;
                 int output = executeIntCode(intCode);
                 if(output == desiredOutput) {
-                    Log.d(String.format("Solution found for noun %d and verb %d", noun, verb));
+                    if(Log.DEBUG) { Log.d(String.format("Solution found for noun %d and verb %d", noun, verb)); }
                     return (100 * noun) + verb;
                 }
             }

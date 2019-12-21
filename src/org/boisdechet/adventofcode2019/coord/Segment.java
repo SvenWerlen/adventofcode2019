@@ -70,7 +70,7 @@ public class Segment {
             }
         }
         // ignore origin ;-)
-        Log.d(String.format("Test cross %s - %s => %s", this.toString(), seg.toString(), cross == null ? "no cross" : cross.toString()));
+        if(Log.DEBUG) { Log.d(String.format("Test cross %s - %s => %s", this.toString(), seg.toString(), cross == null ? "no cross" : cross.toString())); }
         return cross != null && cross.manhattanDistance(0,0) > 0 ? cross : null;
     }
 

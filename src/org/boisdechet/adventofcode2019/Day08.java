@@ -32,7 +32,7 @@ public class Day08 {
                 minLayer = i;
             }
         }
-        Log.d(String.format("Min 0s is %d for layer %d", minCount, minLayer));
+        if(Log.DEBUG) { Log.d(String.format("Min 0s is %d for layer %d", minCount, minLayer)); }
         // compute result
         int c1 = image.getColorCountForLayer(1, minLayer);
         int c2 = image.getColorCountForLayer(2, minLayer);

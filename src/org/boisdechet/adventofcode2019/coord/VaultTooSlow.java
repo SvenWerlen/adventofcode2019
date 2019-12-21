@@ -61,7 +61,7 @@ public class VaultTooSlow {
         }
         // open door (if key available)
         else if(map[y][x] >= TYPE_DOOR && map[y][x] <= TYPE_DOOR + 'Z' && !keys.contains(map[y][x]-TYPE_DOOR)) {
-            Log.d(String.format("Door %s cannot be opened", (char)('A'+map[y][x]-TYPE_DOOR)));
+            if(Log.DEBUG) { Log.d(String.format("Door %s cannot be opened", (char)('A'+map[y][x]-TYPE_DOOR))); }
             return -100;
         }
 
@@ -93,7 +93,7 @@ public class VaultTooSlow {
         }
         // all keys found
         if(keys.size() == keyCount) {
-            Log.d("Best distance found = " + curDistance);
+            if(Log.DEBUG) { Log.d("Best distance found = " + curDistance); }
             return curDistance;
         }
         // initialize minDist map
@@ -102,8 +102,8 @@ public class VaultTooSlow {
         // initialize start point
         minDist[start.y][start.x] = 0;
 
-        Log.d(String.format("Current distance %d with start %s", curDistance, start));
-        Log.d(dumpMinDistMap(minDist, keys, start));
+        if(Log.DEBUG) { Log.d(String.format("Current distance %d with start %s", curDistance, start)); }
+        if(Log.DEBUG) { Log.d(dumpMinDistMap(minDist, keys, start)); }
 
 
         int steps = 1;
@@ -144,11 +144,11 @@ public class VaultTooSlow {
                 }
             }
             if(!inProgress || (curDistance + steps) >= bestDistance) {
-                Log.d(String.format("Ignoring that path after %d steps %s", curDistance + steps, !inProgress ? "(no path)" : ""));
+                if(Log.DEBUG) { Log.d(String.format("Ignoring that path after %d steps %s", curDistance + steps, !inProgress ? "(no path)" : "")); }
                 return bestDistance;
             }
-            Log.d("Steps " + steps);
-            Log.d(dumpMinDistMap(minDist, keys, start));
+            if(Log.DEBUG) { Log.d("Steps " + steps); }
+            if(Log.DEBUG) { Log.d(dumpMinDistMap(minDist, keys, start)); }
             steps++;
         }
     }

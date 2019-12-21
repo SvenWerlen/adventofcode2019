@@ -21,7 +21,7 @@ public class Day03 {
         for(int i=0; i<moves.length; i++) {
             path[i] = Segment.newSegment(curPoint, moves[i]);
             curPoint = path[i].getTo();
-            Log.d(String.format("Path #%d: %s", i, path[i]));
+            if(Log.DEBUG) { Log.d(String.format("Path #%d: %s", i, path[i])); }
         }
         return path;
     }
@@ -36,7 +36,7 @@ public class Day03 {
             for(int j=0; j<path2.length; j++) {
                 Point cross = path1[i].cross(path2[j]);
                 if(cross != null) {
-                    Log.d(String.format("Cross found at %s", cross.toString()));
+                    if(Log.DEBUG) { Log.d(String.format("Cross found at %s", cross.toString())); }
                     int dist = cross.manhattanDistance(0,0);
                     if(nearest == null || nearest.manhattanDistance(0,0) > dist) {
                         nearest = cross;
@@ -47,7 +47,7 @@ public class Day03 {
         if(nearest == null) {
             throw new IllegalStateException("No cross found!");
         }
-        Log.d(String.format("Nearest cross found at %s", nearest.toString()));
+        if(Log.DEBUG) { Log.d(String.format("Nearest cross found at %s", nearest.toString())); }
         return nearest.manhattanDistance(0, 0);
     }
 
@@ -66,7 +66,7 @@ public class Day03 {
             for(int j=0; j<path2.length; j++) {
                 Point cross = path1[i].cross(path2[j]);
                 if(cross != null) {
-                    Log.d(String.format("Cross found at %s", cross.toString()));
+                    if(Log.DEBUG) { Log.d(String.format("Cross found at %s", cross.toString())); }
                     // compute distance from last point to cross
                     Point lastVisited1 = i > 0 ? path1[i-1].getTo() : new Point(0,0);
                     Point lastVisited2 = j > 0 ? path2[j-1].getTo() : new Point(0,0);
@@ -84,7 +84,7 @@ public class Day03 {
         if(nearest == null) {
             throw new IllegalStateException("No cross found!");
         }
-        Log.d(String.format("Nearest cross found at %s", nearest.toString()));
+        if(Log.DEBUG) { Log.d(String.format("Nearest cross found at %s", nearest.toString())); }
         return minDist;
     }
 
