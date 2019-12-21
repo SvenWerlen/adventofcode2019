@@ -42,20 +42,19 @@ public class Dijkstra {
                 return curNode;
             }
             nodes.remove(curNode);
-            Log.d("");
-            Log.d(String.format("Current node is %s with distance %d", curNode, curNode.getDistance()));
+            if(Log.DEBUG) { Log.d(String.format("Current node is %s with distance %d", curNode, curNode.getDistance())); }
             // compute distances for nodes "around"
             for(Node n : nodes) {
                 if(curNode.getObject().pathExists(n.getObject())) {
                     int dist = curNode.getObject().getDistanceTo(n.getObject());
-                    Log.d(String.format("Path exists between %s and %s (dist = %d)", curNode, n, dist));
+                    if(Log.DEBUG) { Log.d(String.format("Path exists between %s and %s (dist = %d)", curNode, n, dist)); }
                     if(curNode.getDistance() + dist < n.getDistance()) {
                         n.setPreviousNode(curNode);
                         n.setDistance(curNode.getDistance() + dist);
-                        Log.d(String.format("Setting distance in %s to %d", n, n.getDistance()));
+                        if(Log.DEBUG) { Log.d(String.format("Setting distance in %s to %d", n, n.getDistance())); }
                     }
                 } else {
-                    Log.d(String.format("Path doesn't exists between %s and %s", curNode, n));
+                    if(Log.DEBUG) { Log.d(String.format("Path doesn't exists between %s and %s", curNode, n)); }
                 }
             }
             // search next best node
