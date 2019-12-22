@@ -2,6 +2,7 @@ package org.boisdechet.adventofcode2019;
 
 import org.boisdechet.adventofcode2019.coord.Beam;
 import org.boisdechet.adventofcode2019.coord.DonutMaze;
+import org.boisdechet.adventofcode2019.coord.DonutMaze2;
 import org.boisdechet.adventofcode2019.coord.Point;
 import org.boisdechet.adventofcode2019.utils.InputUtil;
 import org.boisdechet.adventofcode2019.utils.Log;
@@ -26,13 +27,15 @@ public class Day20 {
      * Part 2
      */
     public static long part2() throws IOException {
-        return -1;
+        DonutMaze2 dm = new DonutMaze2(InputUtil.readInputAsString(20, true), true);
+        return dm.getShortestPath().getDistance();
     }
 
     public static void main(String[] args) {
         Log.welcome();
         try {
             Log.i(String.format("Steps from AA to ZZ: %d", part1()));
+            Log.i(String.format("Steps from AA to ZZ (outmost layer): %d", part2()));
         } catch(Exception exc) {
             Log.w(String.format("Error during execution: %s", exc.getMessage()));
             exc.printStackTrace();

@@ -11,6 +11,7 @@ import java.util.List;
 public class Dijkstra {
 
     private List<INodeObject> objects;
+    private List<Node> history = new ArrayList<>();
 
     public Dijkstra(List<INodeObject> objects) {
         if(objects == null || objects.size() <= 2) {
@@ -19,7 +20,13 @@ public class Dijkstra {
         this.objects = objects;
     }
 
+    public List<Node> getShortestPaths(INodeObject srcObj) {
+        getShortestPath(srcObj, null);
+        return history;
+    }
+
     public Node getShortestPath(INodeObject srcObj, INodeObject dstObj) {
+        history.clear();
         // prepare graph
         List<Node> nodes = new ArrayList<>();
         Node src = null;
@@ -30,9 +37,9 @@ public class Dijkstra {
             if(obj == srcObj) { src = node; }
             if(obj == dstObj) { dst = node; }
         }
-        // check that source and destination are part of the list
-        if(src == null || dst == null) {
-            throw new IllegalStateException("Source or Destination are not included in list!");
+        // check that source is part of the list
+        if(src == null) {
+            throw new IllegalStateException("Source is not included in list!");
         }
         // algorithm
         src.setDistance(0);
@@ -42,6 +49,7 @@ public class Dijkstra {
                 return curNode;
             }
             nodes.remove(curNode);
+            history.add(curNode);
             if(Log.DEBUG) { Log.d(String.format("Current node is %s with distance %d", curNode, curNode.getDistance())); }
             // compute distances for nodes "around"
             for(Node n : nodes) {
@@ -51,10 +59,9 @@ public class Dijkstra {
                     if(curNode.getDistance() + dist < n.getDistance()) {
                         n.setPreviousNode(curNode);
                         n.setDistance(curNode.getDistance() + dist);
-                        if(Log.DEBUG) { Log.d(String.format("Setting distance in %s to %d", n, n.getDistance())); }
                     }
                 } else {
-                    if(Log.DEBUG) { Log.d(String.format("Path doesn't exists between %s and %s", curNode, n)); }
+                    //if(Log.DEBUG) { Log.d(String.format("Path doesn't exists between %s and %s", curNode, n)); }
                 }
             }
             // search next best node
@@ -65,7 +72,10 @@ public class Dijkstra {
                 }
             }
             curNode = minNode;
+            if(minNode.getDistance() == Integer.MAX_VALUE) {
+                break;
+            }
         }
-        return curNode;
+        return dst == null || curNode.equals(dst) ? curNode : null;
     }
 }

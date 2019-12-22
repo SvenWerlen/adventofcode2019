@@ -19,15 +19,15 @@ public class DijkstraDynamic {
     }
 
     private Controller controller;
-    private PriorityQueue<Node> queue;
+
 
     public DijkstraDynamic(Controller controller) {
         this.controller = controller;
-        this.queue = new PriorityQueue<>();
     }
 
     public Node getShortestPath(INodeObject srcObj) {
         // prepare graph
+        PriorityQueue<Node> queue = new PriorityQueue<>();
         Set<String> history = new HashSet<>();
         queue.add(new Node(srcObj, 0));
         // algorithm

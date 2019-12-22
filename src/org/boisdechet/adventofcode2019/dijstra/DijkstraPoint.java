@@ -1,8 +1,11 @@
 package org.boisdechet.adventofcode2019.dijstra;
 
 import org.boisdechet.adventofcode2019.coord.Point;
+import org.boisdechet.adventofcode2019.utils.Log;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DijkstraPoint implements INodeObject {
@@ -14,6 +17,11 @@ public class DijkstraPoint implements INodeObject {
     public DijkstraPoint(String name) {
         this.name = name;
         this.connections = new HashMap<>();
+    }
+
+    public DijkstraPoint(String name, Object obj) {
+        this(name);
+        this.obj = obj;
     }
 
     public Object getObj() {
@@ -30,9 +38,14 @@ public class DijkstraPoint implements INodeObject {
 
     public synchronized void addConnection(DijkstraPoint target, int length) {
         if(!connections.containsKey(target)) {
+            if(Log.DEBUG) { Log.d(String.format("Connecting %s with %s", this.toString(), target.toString())); }
             connections.put(target, length);
             target.addConnection(this, length);
         }
+    }
+
+    public List<DijkstraPoint> getConnections() {
+        return new ArrayList<>(connections.keySet());
     }
 
     @Override

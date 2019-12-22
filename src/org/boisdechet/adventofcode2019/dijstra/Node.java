@@ -1,5 +1,9 @@
 package org.boisdechet.adventofcode2019.dijstra;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class Node implements Comparable<Node> {
 
     private INodeObject data;
@@ -48,12 +52,18 @@ public class Node implements Comparable<Node> {
     }
 
     public String getFullPath() {
-        StringBuffer buf = new StringBuffer(toString());
+        List<String> path = new ArrayList<>();
+        path.add(toString());
         Node cur = this;
         while((cur = cur.getPreviousNode()) != null) {
-            buf.append(cur.toString());
+            path.add(cur.toString());
         }
-        return buf.reverse().toString();
+        Collections.reverse(path);
+        StringBuffer buf = new StringBuffer();
+        for(String s : path) {
+            buf.append(s).append('|');
+        }
+        return buf.toString();
     }
 
     @Override
