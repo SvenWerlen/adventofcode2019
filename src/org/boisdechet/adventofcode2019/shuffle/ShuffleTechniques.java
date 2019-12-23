@@ -42,6 +42,10 @@ public class ShuffleTechniques {
         for(int i=0; i<cardsCount; i++) {
             cards[i] = i;
         }
+        return shuffle(instr, cards);
+    }
+
+    public static int[] shuffle(List<String> instr, int[] cards) {
         // initialize patterns
         Pattern pCut = Pattern.compile("cut (-?\\d+)");
         Pattern pDealInc = Pattern.compile("deal with increment (\\d+)");
@@ -62,6 +66,7 @@ public class ShuffleTechniques {
                 throw new IllegalStateException(String.format("Invalid shuffle technique: %s", tech));
             }
         }
+        //Log.i(String.format("Cards (final): %s", dumpCards(cards)));
         if(Log.DEBUG) { Log.d(String.format("Cards (final): %s", dumpCards(cards))); }
         return cards;
     }
@@ -69,8 +74,38 @@ public class ShuffleTechniques {
     public static String dumpCards(int[] cards) {
         StringBuffer buf = new StringBuffer(3 * cards.length);
         for(Integer c : cards) {
-            buf.append(String.format("%3d", c));
+            buf.append(String.format("%6d", c));
         }
         return buf.toString();
+    }
+
+    /**
+     * Doesn't really shuffles. Just computes the position of the card
+     */
+    public static long shuffleCard(List<String> instr, long cardPos, long deckSize) {
+        // initialize patterns
+        Pattern pCut = Pattern.compile("cut (-?\\d+)");
+        Pattern pDealInc = Pattern.compile("deal with increment (\\d+)");
+        Matcher m;
+        // apply techniques
+        for(String tech : instr) {
+            if(Log.DEBUG) { Log.d(String.format("Position: %d", cardPos)); }
+            if("deal into new stack".equals(tech)) {
+                if(Log.DEBUG) { Log.d("Deal into new stack"); }
+                cardPos = deckSize - cardPos -1;
+            } else if((m = pCut.matcher(tech)).matches()) {
+                if(Log.DEBUG) { Log.d(String.format("Cut %d", Integer.parseInt(m.group(1)))); }
+                long cut = Long.parseLong(m.group(1));
+                if(cut < 0) { cut = deckSize + cut; }
+                cardPos = cardPos < cut ? deckSize - (cut-cardPos) : cardPos -cut;
+            } else if((m = pDealInc.matcher(tech)).matches()) {
+                if(Log.DEBUG) { Log.d(String.format("Deal with increment %d", Integer.parseInt(m.group(1)))); }
+                cardPos = cardPos * Long.parseLong(m.group(1)) % deckSize;
+            } else {
+                throw new IllegalStateException(String.format("Invalid shuffle technique: %s", tech));
+            }
+        }
+        if(Log.DEBUG) { Log.d(String.format("Position (final): %s", cardPos)); }
+        return cardPos;
     }
 }
