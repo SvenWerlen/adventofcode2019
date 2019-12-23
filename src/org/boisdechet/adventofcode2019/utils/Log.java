@@ -5,6 +5,8 @@ import java.util.Arrays;
 public class Log {
 
     public static boolean DEBUG = false;
+    public static boolean INFO = false;
+
     private static final String WELCOME_MESSAGE = "Avent of code 2019";
     private static final String SEPARATOR       = "==================";
     private static final String BYE_MESSAGE     = "Execution time: %d %s";
