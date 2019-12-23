@@ -18,17 +18,9 @@ class Day23Test {
 
     @Test
     public void examples() throws Exception {
-//        long[] instr = InputUtil.convertToLongArray(InputUtil.readInputAsString(23, true));
-//        NIC nic = new NIC(instr, 0, new Network(instr, 50));
-//        nic.boot();
-//        Thread.sleep(10000);
-//        nic.shutdown();
-
-        Log.INFO = true;
-        long[] instr = InputUtil.convertToLongArray(InputUtil.readInputAsString(23, true));
-        Network n = new Network(instr, 50);
-        PointL p = n.runUntilPacketSentTo(255);
-        Log.i("Final message = " + p.toString());
+        // solutions (backwards compatibility)
+        assertEquals(18604, Day23.part1());
+        assertEquals(11880, Day23.part2());
     }
 
 }

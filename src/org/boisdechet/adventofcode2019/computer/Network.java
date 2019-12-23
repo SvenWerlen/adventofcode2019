@@ -8,8 +8,13 @@ import java.util.Map;
 
 public class Network {
 
-    private PointL dataReceived;
+    private static int SLEEP_CHECK = 50;
+    public static final int DEVICE_NAT = 255;
+
+    private PointL dataReceived, lastNATPacket;
     private int receiverId;
+    private boolean resetOnIde;
+
     private Map<Integer, NIC> computers;
 
     public Network(long[] instr, int computers) {
@@ -27,7 +32,38 @@ public class Network {
         }
         while(dataReceived == null) {
             try {
-                Thread.sleep(500);
+                Thread.sleep(SLEEP_CHECK);
+            } catch (InterruptedException e) {}
+        }
+        for(NIC n : computers.values()) {
+            n.shutdown();
+        }
+        return dataReceived;
+    }
+
+    public PointL runUntilPacketSentTo0TwiceInARow() {
+        long yPrev = -1;
+        this.receiverId = DEVICE_NAT;
+        for(NIC n : computers.values()) {
+            n.boot();
+        }
+        while(true) {
+            try {
+                boolean idle = true;
+                for(NIC n : computers.values()) {
+                    if(!n.isIdle()) {
+                        idle = false;
+                        break;
+                    }
+                }
+                if(idle) {
+                    if(yPrev == lastNATPacket.y) {
+                        break;
+                    }
+                    send(0, lastNATPacket);
+                    yPrev = lastNATPacket.y;
+                }
+                Thread.sleep(SLEEP_CHECK);
             } catch (InterruptedException e) {}
         }
         for(NIC n : computers.values()) {
@@ -39,6 +75,9 @@ public class Network {
     public synchronized void send(int receiverId, PointL p) {
         if(this.receiverId == receiverId) {
             dataReceived = p;
+            if(receiverId == DEVICE_NAT) {
+                lastNATPacket = p;
+            }
         }
         else if(computers.containsKey(receiverId)) {
             computers.get(receiverId).receive(p.x, p.y);

@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class NIC implements Runnable {
-    private static int SLEEP_BOOTUP = 2000;
-    private static int SLEEP_RUN = 100;
+    private static int SLEEP_BOOTUP = 0;
+    private static int SLEEP_RUN = 5;
 
     public static class SendInstruction {
         public PointL data;
@@ -30,7 +30,7 @@ public class NIC implements Runnable {
     private volatile boolean shutdown = false;
     private LinkedBlockingDeque<PointL> msgToReceive;
     private Network network;
-    private boolean hasData;
+    private int idle;
 
     public NIC(long[] instr, int address, Network network) {
         this.address = address;
@@ -51,6 +51,10 @@ public class NIC implements Runnable {
         }
     }
 
+    public boolean isIdle() {
+        return this.idle > 3;
+    }
+
     public void receive(long x, long y) {
         if(Log.INFO) { Log.d(String.format("[%02d] Message received: %s", address, new PointL(x,y))); }
         msgToReceive.add(new PointL(x, y));
@@ -67,36 +71,47 @@ public class NIC implements Runnable {
         }
     }
 
+    private void checkCondition(boolean cond, String errorMessage) {
+        if(!cond) {
+            throw new IllegalStateException(errorMessage);
+        }
+    }
+
     @Override
     public void run() {
-        int sendTo = -1;
         try {
             Thread.sleep(SLEEP_BOOTUP);
             while(!shutdown) {
-                List<Long> inputs = new ArrayList<>();
-                //if(Log.INFO) { Log.i(String.format("[%02d] %d messages in queue", address, msgToReceive.size())); }
-                if(!msgToReceive.isEmpty()) {
+                int sendTo = -1;
+                // RECEIVE
+                if(isIdle() && !msgToReceive.isEmpty()) {
+                    idle = 0;
                     PointL msg = msgToReceive.poll();
-                    long[] newInputs = new long[] { msg.x, msg.y };
-                    if(Log.INFO) { Log.i(String.format("[%02d] instructions: RECEIVE %s", address, InputUtil.convertToString(newInputs, ','))); }
-                    sendTo = Math.toIntExact(machine.execute(newInputs));
-                    hasData = true;
+                    if(Log.INFO) { Log.i(String.format("[%02d] instructions: RECEIVE (%d,%d)", address, msg.x, msg.y)); }
+                    sendTo = Math.toIntExact(machine.execute(new long[] { msg.x, msg.y }));
+                    checkCondition(sendTo >= 0 || sendTo == OpCodeMachine.WAIT_FOR_INPUT, String.format("No output expected after RECEIVE instructions! (%d)", sendTo));
+                    if(Log.INFO) { Log.i(String.format("[%02d] result is %d", address, sendTo)); }
                 }
-                if(shutdown) { break; }
-                if(!hasData) {
-                    sendTo = sendTo >= 0 ? sendTo : Math.toIntExact(machine.execute(-1));
-                    if(sendTo >= 0) {
-                        long sendX = machine.execute(-1);
-                        long sendY = machine.execute(-1);
-                        SendInstruction instr = new SendInstruction(new PointL(sendX, sendY), sendTo);
-                        if(Log.INFO) { Log.i(String.format("[%02d] instructions: %s", address, instr.toString())); }
-                        network.send(sendTo, new PointL(sendX, sendY));
-                        sendTo = -1;
-                    } else {
-                        hasData = false;
-                    }
+                sendTo = sendTo >= 0 ? sendTo : Math.toIntExact(machine.execute(-1));
+                checkCondition(sendTo != OpCodeMachine.HALT, "OpCode machine ended!");
+                // idle?
+                if(sendTo == OpCodeMachine.WAIT_FOR_INPUT) {
+                    idle = Math.max(idle+1, Integer.MAX_VALUE);
+                    //Log.i(String.format("[%02d] Idle", address));
+                    Thread.sleep(SLEEP_RUN);
+                    continue;
+                } else if(sendTo >= 0) {
+                    idle = 0;
+                    long sendX = machine.execute(-1);
+                    checkCondition(sendX != OpCodeMachine.HALT && sendX != OpCodeMachine.WAIT_FOR_INPUT,
+                            String.format("[%02d] Coordinate X was expected after sender [%02d] but '%s' received", address, sendTo, sendX == OpCodeMachine.WAIT_FOR_INPUT ? "wait input" : "halt"));
+                    long sendY = machine.execute(-1);
+                    checkCondition(sendY != OpCodeMachine.HALT && sendY != OpCodeMachine.WAIT_FOR_INPUT,
+                            String.format("[%02d] Coordinate Y was expected but '%s' received", address, sendY == OpCodeMachine.WAIT_FOR_INPUT ? "wait input" : "halt"));
+                    SendInstruction instr = new SendInstruction(new PointL(sendX, sendY), sendTo);
+                    if(Log.INFO) { Log.i(String.format("[%02d] instructions: %s", address, instr.toString())); }
+                    network.send(sendTo, new PointL(sendX, sendY));
                 }
-                Thread.sleep(SLEEP_RUN);
             }
         } catch (InterruptedException e) {}
         if(Log.INFO) { Log.d(String.format("[%02d] interrupted", address)); }

@@ -8,6 +8,7 @@ import java.util.Map;
 public class OpCodeMachine implements Cloneable {
 
     public static final long HALT = Integer.MIN_VALUE;
+    public static final long WAIT_FOR_INPUT = Integer.MIN_VALUE+1;
 
     private long[] orig;
     private long[] instr;
@@ -184,7 +185,7 @@ public class OpCodeMachine implements Cloneable {
                         paramIdx++;
                     } else if(returnOnInput) {
                         curInstr = prevInstr; // go-back (input will be requested again on next execute)
-                        return Integer.MIN_VALUE;
+                        return WAIT_FOR_INPUT;
                     }
                     if(Log.DEBUG) { Log.d(String.format("Input required! Giving %s (%d)", param == '\n' ? "\\n" : (char)param, param)); }
                     setValue(dest, param, opcode.getParam1Mode());
