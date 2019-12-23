@@ -14,6 +14,7 @@ class Day21Test {
     public void examples() throws Exception {
         // solutions (backwards compatibility)
         assertEquals(19351175, Day21.part1());
+        assertEquals(1141652864, Day21.part2());
     }
 
 }
