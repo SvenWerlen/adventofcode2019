@@ -138,6 +138,24 @@ public class InputUtil {
         return result;
     }
 
+    public static List<String> readSampleAsList(int day, int sampleId) throws IOException {
+        return readAsList(day, "s" + sampleId);
+    }
+
+    public static List<String> readInputAsList(int day, boolean firstPart) throws IOException {
+        return readAsList(day, firstPart ? "1" : "2");
+    }
+
+    public static List<String> readAsList(int day, String fileId) throws IOException {
+        BufferedReader reader = readInput(day, fileId);
+        List<String> results = new ArrayList<>();
+        String line = null;
+        while((line = reader.readLine()) != null) {
+            results.add(line);
+        }
+        return results;
+    }
+
     /**
      * Reads input (string) and converts it to a list of coordinates
      * @param text input string
