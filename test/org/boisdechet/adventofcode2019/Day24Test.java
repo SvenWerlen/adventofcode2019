@@ -27,8 +27,14 @@ class Day24Test {
         e.untilFirstMatch();
         assertEquals(".....\n.....\n.....\n#....\n.#...\n", e.toString());
         assertEquals(2129920, e.getBiodiversityRating());
+        // part II
+        e = new Eris(InputUtil.readSampleAsString(24, 1), true);
+        for(int i=0; i<10; i++) { e.oneMinuteLater(true, true); }
+        assertEquals(InputUtil.readSampleAsString(24, 2), e.dump(true, true));
+        assertEquals(99, e.bugsCount(true, true));
         // solutions (backwards compatibility)
         assertEquals(20751345, Day24.part1());
+        assertEquals(1983, Day24.part2());
     }
 
 }
