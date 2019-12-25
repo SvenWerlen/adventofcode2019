@@ -26,6 +26,7 @@ class Day22Test {
         assertEquals(2480, ShuffleTechniques.shuffleCard(InputUtil.readInputAsList(22, true), 2019, 10007));
         // solutions (backwards compatibility)
         assertEquals(2480, Day22.part1());
+        assertEquals(62416301438548L, Day22.part2());
     }
 
 }

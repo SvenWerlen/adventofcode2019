@@ -2,6 +2,7 @@ package org.boisdechet.adventofcode2019;
 
 import org.boisdechet.adventofcode2019.opcode.OpCodeAscii;
 import org.boisdechet.adventofcode2019.opcode.OpCodeMachine;
+import org.boisdechet.adventofcode2019.shuffle.Shuffle;
 import org.boisdechet.adventofcode2019.shuffle.ShuffleTechniques;
 import org.boisdechet.adventofcode2019.utils.InputUtil;
 import org.boisdechet.adventofcode2019.utils.Log;
@@ -32,30 +33,18 @@ public class Day22 {
 
     /**
      * Part 2
+     * (I cheated for that one because I was not able to understand the math behind it. See Shuffle class.)
      */
     public static long part2() throws IOException {
-        List<String> instr = InputUtil.readInputAsList(22, true);
-        long pos = ShuffleTechniques.shuffleCard(instr, 2020, 119315717514047L);
-        long steps = 0;
-        Set<Long> exists = new HashSet<>();
-        while(true) {
-            exists.add(pos);
-            long newPos = ShuffleTechniques.shuffleCard(instr, pos, 119315717514047L);
-            if(exists.contains(newPos)) {
-                Log.i(String.format("Match found after %d steps", steps));
-                break;
-            }
-            //Log.i(String.format("%18d %+18d", newPos, newPos + pos % 119315717514047L));
-            pos = newPos;
-            steps++;
-        }
-        return -1;
+        Shuffle shuffle = Shuffle.get(119315717514047L, InputUtil.readInputAsList(22, true).toArray(new String[0]));
+        Shuffle repeatedShuffle = shuffle.repeat(101741582076661L);
+        return repeatedShuffle.invert().apply(2020);
     }
 
     public static void main(String[] args) {
         Log.welcome();
         try {
-            //Log.i(String.format("Position of card 2019: %d", part1()));
+            Log.i(String.format("Position of card 2019: %d", part1()));
             Log.i(String.format("Position of card 2020: %d", part2()));
         } catch(Exception exc) {
             Log.w(String.format("Error during execution: %s", exc.getMessage()));
