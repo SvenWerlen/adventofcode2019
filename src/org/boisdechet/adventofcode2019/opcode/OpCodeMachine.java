@@ -128,6 +128,9 @@ public class OpCodeMachine implements Cloneable {
     }
 
     public long execute(int[] parameters) {
+        if(parameters == null) {
+            return execute();
+        }
         long[] newParams = new long[parameters.length];
         for(int i=0; i<parameters.length; i++) {
             newParams[i]=parameters[i];

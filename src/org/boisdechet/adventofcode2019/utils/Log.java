@@ -12,7 +12,11 @@ public class Log {
     private static final String BYE_MESSAGE     = "Execution time: %d %s";
 
     private static void printMessage(String text) {
-        System.out.println(text);
+        printMessage(text, true);
+    }
+    private static void printMessage(String text, boolean newLine) {
+        if(newLine) { System.out.println(text); }
+        else { System.out.print(text); }
     }
     private static long startTime;
 
@@ -35,7 +39,11 @@ public class Log {
     }
 
     public static void i(String text) {
-        printMessage(text);
+        printMessage(text, true);
+    }
+
+    public static void i(String text, boolean newLine) {
+        printMessage(text, newLine);
     }
 
     public static void i(int[] values) {

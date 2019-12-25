@@ -175,6 +175,14 @@ public class InputUtil {
         return results;
     }
 
+    public static int[] convertStringToIntArray(String input) {
+        int[] output = new int[input.length()];
+        for(int i=0; i<input.length(); i++) {
+            output[i]=input.charAt(i);
+        }
+        return output;
+    }
+
     /**
      * Reads input (string) and converts it to a list of coordinates
      * @param text input string
