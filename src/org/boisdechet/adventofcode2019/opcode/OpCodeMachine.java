@@ -8,6 +8,7 @@ import java.util.Map;
 public class OpCodeMachine implements Cloneable {
 
     public static final long HALT = Integer.MIN_VALUE;
+    public static final long WAIT_FOR_INPUT = Integer.MIN_VALUE+1;
 
     private long[] orig;
     private long[] instr;
@@ -15,7 +16,9 @@ public class OpCodeMachine implements Cloneable {
     private int relBase;
     private int[] paramInit;
     private int paramInitIdx;
+    private int defaultParam;
     Map<Integer, Long> outMemory;
+    boolean returnOnInput;
 
     private OpCodeMachine() {
     }
@@ -27,7 +30,7 @@ public class OpCodeMachine implements Cloneable {
         outMemory = new HashMap<>();
         curInstr = 0;
         relBase = 0;
-        paramInit = null;
+        paramInit = new int[] {};
         paramInitIdx = 0;
     }
 
@@ -39,6 +42,14 @@ public class OpCodeMachine implements Cloneable {
     public OpCodeMachine(long[] instructions, int[] paramInit) {
         this(instructions);
         this.paramInit = paramInit;
+    }
+
+    public void setDefaultParam(int value) {
+        this.defaultParam = value;
+    }
+
+    public void setReturnOnInput() {
+        this.returnOnInput = true;
     }
 
     /**
@@ -104,9 +115,35 @@ public class OpCodeMachine implements Cloneable {
         return this;
     }
 
+    public long execute() {
+        return execute(new int[] {});
+    }
+
     public long execute(int parameter) {
-        long result = 0;
+        return execute(new long[] { parameter});
+    }
+
+    public long execute(long parameter) {
+        return execute(new long[] { parameter});
+    }
+
+    public long execute(int[] parameters) {
+        if(parameters == null) {
+            return execute();
+        }
+        long[] newParams = new long[parameters.length];
+        for(int i=0; i<parameters.length; i++) {
+            newParams[i]=parameters[i];
+        }
+        return execute(newParams);
+    }
+
+    public long execute(long[] parameters) {
+        long result;
+        int paramIdx = 0;
+        int prevInstr = 0;
         while(true) {
+            prevInstr = curInstr;
             if(Log.DEBUG) { Log.d(instr);}
 
             // get OpCode
@@ -139,10 +176,19 @@ public class OpCodeMachine implements Cloneable {
                 case OpCode.OP_IN: // 3
                     check(opcode.getParam1Mode() != OpCode.MODE_IMMEDIATE, "Invalid mode for 'In' instruction.");
                     dest = Math.toIntExact(instr[curInstr+1]);
-                    int param = parameter;
-                    if(paramInit != null && paramInitIdx < paramInit.length) {
+                    long param = defaultParam;
+                    // first: take parameters from initialization
+                    if(paramInitIdx < paramInit.length) {
                         param = this.paramInit[paramInitIdx];
                         paramInitIdx++;
+                    }
+                    // second: take parameters from method
+                    else if(paramIdx < parameters.length) {
+                        param = parameters[paramIdx];
+                        paramIdx++;
+                    } else if(returnOnInput) {
+                        curInstr = prevInstr; // go-back (input will be requested again on next execute)
+                        return WAIT_FOR_INPUT;
                     }
                     if(Log.DEBUG) { Log.d(String.format("Input required! Giving %s (%d)", param == '\n' ? "\\n" : (char)param, param)); }
                     setValue(dest, param, opcode.getParam1Mode());

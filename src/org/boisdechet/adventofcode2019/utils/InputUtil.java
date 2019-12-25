@@ -106,10 +106,29 @@ public class InputUtil {
                 .toArray();
     }
 
-    public static String convertToString(int[] value) {
+    public static String convertToString(int[] values) {
+        return convertToString(values, null);
+    }
+
+    public static String convertToString(long[] values) {
+        return convertToString(values, null);
+    }
+
+    public static String convertToString(int[] values, Character separator) {
+        long[] newValues = new long[values.length];
+        for(int i=0; i<values.length; i++) {
+            newValues[i]=values[i];
+        }
+        return convertToString(newValues, separator);
+    }
+
+    public static String convertToString(long[] values, Character separator) {
         StringBuffer buf = new StringBuffer();
-        for(int v : value) {
+        for(long v : values) {
             buf.append(v);
+            if(separator != null) {
+                buf.append(separator);
+            }
         }
         return buf.toString();
     }
@@ -154,6 +173,14 @@ public class InputUtil {
             results.add(line);
         }
         return results;
+    }
+
+    public static int[] convertStringToIntArray(String input) {
+        int[] output = new int[input.length()];
+        for(int i=0; i<input.length(); i++) {
+            output[i]=input.charAt(i);
+        }
+        return output;
     }
 
     /**
